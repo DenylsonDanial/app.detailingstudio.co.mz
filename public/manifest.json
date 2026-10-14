@@ -1,0 +1,21 @@
+{
+  "name": "Detailing Studio",
+  "short_name": "Detailing Studio",
+  "description": "Sistema de gestão do Detailing Studio: entradas de viaturas, serviços, pagamentos, conta corrente e despesas.",
+  "display": "standalone",
+  "start_url": "/",
+  "theme_color": "#CA0278",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "favicon/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

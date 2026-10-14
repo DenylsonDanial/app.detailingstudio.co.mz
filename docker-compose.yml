@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        VITE_HOST_API: ${VITE_HOST_API:-http://localhost:8090/}
+        VITE_ASSETS_API: ${VITE_ASSETS_API:-}
+    image: detailingstudio-app
+    container_name: ds-app
+    restart: unless-stopped
+    ports:
+      - '8095:80'

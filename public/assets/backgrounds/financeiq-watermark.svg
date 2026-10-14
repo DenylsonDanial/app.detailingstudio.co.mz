@@ -1,0 +1,113 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Grid Pattern Base -->
+  <defs>
+    <!-- Gradient definitions -->
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:0.03" />
+      <stop offset="100%" style="stop-color:#EC4899;stop-opacity:0.03" />
+    </linearGradient>
+    
+    <linearGradient id="grad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#EC4899;stop-opacity:0.02" />
+      <stop offset="100%" style="stop-color:#6366F1;stop-opacity:0.02" />
+    </linearGradient>
+
+    <!-- Dot Pattern -->
+    <pattern id="dots" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.5" fill="currentColor" opacity="0.08"/>
+    </pattern>
+
+    <!-- Line Pattern -->
+    <pattern id="lines" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <path d="M0 100 L100 0" stroke="currentColor" stroke-width="0.5" opacity="0.05"/>
+    </pattern>
+  </defs>
+
+  <!-- Background gradient -->
+  <rect width="1920" height="1080" fill="url(#grad1)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="1600" cy="200" r="300" fill="url(#grad2)" opacity="0.3"/>
+  <circle cx="300" cy="800" r="250" fill="url(#grad1)" opacity="0.3"/>
+  <circle cx="1400" cy="900" r="200" fill="url(#grad2)" opacity="0.2"/>
+  
+  <!-- Grid pattern -->
+  <rect width="1920" height="1080" fill="url(#dots)"/>
+  <rect width="1920" height="1080" fill="url(#lines)"/>
+
+  <!-- Financial Icons - Very subtle -->
+  <!-- Chart/Graph icon -->
+  <g opacity="0.04" transform="translate(1500, 700)">
+    <path d="M0 100 L0 0 L20 30 L40 10 L60 40 L80 20 L100 0 L100 100 Z" 
+          fill="currentColor"/>
+  </g>
+  
+  <!-- Coin stack icon -->
+  <g opacity="0.04" transform="translate(200, 200)">
+    <ellipse cx="30" cy="10" rx="30" ry="8" fill="currentColor"/>
+    <ellipse cx="30" cy="20" rx="30" ry="8" fill="currentColor"/>
+    <ellipse cx="30" cy="30" rx="30" ry="8" fill="currentColor"/>
+    <rect x="0" y="10" width="60" height="20" fill="currentColor"/>
+  </g>
+
+  <!-- Trend line icon -->
+  <g opacity="0.04" transform="translate(800, 100)">
+    <path d="M0 80 L30 50 L60 60 L90 20 L120 30" 
+          stroke="currentColor" stroke-width="4" fill="none"/>
+    <circle cx="0" cy="80" r="6" fill="currentColor"/>
+    <circle cx="30" cy="50" r="6" fill="currentColor"/>
+    <circle cx="60" cy="60" r="6" fill="currentColor"/>
+    <circle cx="90" cy="20" r="6" fill="currentColor"/>
+    <circle cx="120" cy="30" r="6" fill="currentColor"/>
+  </g>
+
+  <!-- Bar chart icon -->
+  <g opacity="0.04" transform="translate(400, 500)">
+    <rect x="0" y="40" width="20" height="60" fill="currentColor"/>
+    <rect x="30" y="20" width="20" height="80" fill="currentColor"/>
+    <rect x="60" y="50" width="20" height="50" fill="currentColor"/>
+    <rect x="90" y="10" width="20" height="90" fill="currentColor"/>
+  </g>
+
+  <!-- Pie chart icon -->
+  <g opacity="0.04" transform="translate(1200, 400)">
+    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="10"
+            stroke-dasharray="70 212" transform="rotate(-90 50 50)"/>
+    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="10"
+            stroke-dasharray="90 212" stroke-dashoffset="-70" transform="rotate(-90 50 50)" opacity="0.6"/>
+  </g>
+
+  <!-- Currency symbol -->
+  <g opacity="0.03" transform="translate(100, 500)">
+    <text x="0" y="80" font-family="Inter, sans-serif" font-size="120" font-weight="700" 
+          fill="currentColor">$</text>
+  </g>
+
+  <!-- Percentage symbol -->
+  <g opacity="0.03" transform="translate(1700, 500)">
+    <text x="0" y="80" font-family="Inter, sans-serif" font-size="120" font-weight="700" 
+          fill="currentColor">%</text>
+  </g>
+
+  <!-- Abstract data nodes network -->
+  <g opacity="0.03" transform="translate(600, 700)">
+    <line x1="0" y1="0" x2="80" y2="40" stroke="currentColor" stroke-width="1"/>
+    <line x1="80" y1="40" x2="160" y2="20" stroke="currentColor" stroke-width="1"/>
+    <line x1="80" y1="40" x2="120" y2="100" stroke="currentColor" stroke-width="1"/>
+    <line x1="0" y1="0" x2="40" y2="80" stroke="currentColor" stroke-width="1"/>
+    <circle cx="0" cy="0" r="8" fill="currentColor"/>
+    <circle cx="80" cy="40" r="8" fill="currentColor"/>
+    <circle cx="160" cy="20" r="8" fill="currentColor"/>
+    <circle cx="120" cy="100" r="8" fill="currentColor"/>
+    <circle cx="40" cy="80" r="8" fill="currentColor"/>
+  </g>
+
+  <!-- Subtle geometric shapes -->
+  <rect x="1100" y="100" width="100" height="100" fill="none" 
+        stroke="currentColor" stroke-width="1" opacity="0.03" transform="rotate(15 1150 150)"/>
+  <polygon points="300,300 350,250 400,300 350,350" fill="none" 
+           stroke="currentColor" stroke-width="1" opacity="0.03"/>
+  <circle cx="1400" cy="600" r="60" fill="none" 
+          stroke="currentColor" stroke-width="1" opacity="0.03"/>
+</svg>
+

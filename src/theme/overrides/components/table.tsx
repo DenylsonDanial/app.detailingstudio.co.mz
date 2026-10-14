@@ -1,0 +1,106 @@
+import { Theme, alpha } from '@mui/material/styles';
+import { tableCellClasses } from '@mui/material/TableCell';
+import { tableRowClasses } from '@mui/material/TableRow';
+
+// ----------------------------------------------------------------------
+
+export default function Table(theme: Theme) {
+  return {
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          position: 'relative',
+        },
+      },
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          [`&.${tableRowClasses.selected}`]: {
+            backgroundColor: alpha(theme.palette.primary.dark, 0.04),
+            '&:hover': {
+              backgroundColor: alpha(theme.palette.primary.dark, 0.08),
+            },
+          },
+          '&:last-of-type': {
+            [`& .${tableCellClasses.root}`]: {
+              borderColor: 'transparent',
+            },
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          borderBottomStyle: 'dashed',
+        },
+        head: {
+          fontSize: 14,
+          color: theme.palette.common.white,
+          fontWeight: theme.typography.fontWeightSemiBold,
+          backgroundColor: theme.palette.grey[800],
+          borderBottomColor: 'transparent',
+          '& .MuiTableSortLabel-root': {
+            color: 'inherit',
+            '&:hover': {
+              color: theme.palette.common.white,
+            },
+            '&.Mui-active': {
+              color: theme.palette.common.white,
+              '& .MuiTableSortLabel-icon': {
+                color: 'inherit',
+              },
+            },
+          },
+          '& .MuiCheckbox-root': {
+            color: alpha(theme.palette.common.white, 0.72),
+            '&.Mui-checked, &.MuiCheckbox-indeterminate': {
+              color: theme.palette.common.white,
+            },
+          },
+        },
+        stickyHeader: {
+          backgroundColor: theme.palette.grey[800],
+          backgroundImage: 'none',
+        },
+        paddingCheckbox: {
+          paddingLeft: theme.spacing(1),
+        },
+      },
+    },
+    MuiTablePagination: {
+      defaultProps: {
+        backIconButtonProps: {
+          size: 'small',
+        },
+        nextIconButtonProps: {
+          size: 'small',
+        },
+      },
+      styleOverrides: {
+        root: {
+          width: '100%',
+        },
+        toolbar: {
+          height: 64,
+        },
+        actions: {
+          marginRight: 8,
+        },
+        select: {
+          paddingLeft: 8,
+          '&:focus': {
+            borderRadius: theme.shape.borderRadius,
+          },
+        },
+        selectIcon: {
+          right: 4,
+          width: 16,
+          height: 16,
+          top: 'calc(50% - 8px)',
+        },
+      },
+    },
+  };
+}
