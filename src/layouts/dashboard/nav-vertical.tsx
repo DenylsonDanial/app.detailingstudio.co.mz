@@ -137,7 +137,15 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
           PaperProps={{
             sx: {
               width: NAV.W_VERTICAL,
-              ...chromeSx,
+              // O override global do Drawer temporario pinta o papel com vidro claro
+              // (bgBlur + background.paper) e ganha ao sx simples. && iguala a
+              // especificidade para o menu mobile ficar preto, como no desktop.
+              '&&': {
+                ...chromeSx,
+                backgroundImage: 'none',
+                backdropFilter: 'none',
+                WebkitBackdropFilter: 'none',
+              },
             },
           }}
         >
