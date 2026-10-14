@@ -12,6 +12,12 @@ const icon = (name: string) => <Iconify icon={name} sx={{ width: 1, height: 1 }}
 
 const ICONS = {
   dashboard: icon('solar:widget-5-bold-duotone'),
+  entries: icon('solar:wheel-bold-duotone'),
+  payments: icon('solar:wallet-money-bold-duotone'),
+  clients: icon('solar:users-group-rounded-bold-duotone'),
+  vehicles: icon('solar:bus-bold-duotone'),
+  expenses: icon('solar:bill-list-bold-duotone'),
+  services: icon('solar:tag-price-bold-duotone'),
   users: icon('solar:user-id-bold-duotone'),
   audit: icon('solar:shield-keyhole-bold-duotone'),
   settings: icon('solar:settings-bold-duotone'),
@@ -25,9 +31,8 @@ const ICONS = {
  * acesso ao item: basta uma para o item aparecer. O catalogo de permissoes esta
  * em src/utils/authorities.ts e tem de coincidir com o seed do backend.
  *
- * As areas de negocio da especificacao (Operacao diaria, Clientes e contas,
- * Despesas, Servicos e precos, Relatorios) entram aqui a medida que cada modulo
- * ganha paginas, para o menu nunca apontar para rotas inexistentes.
+ * As areas seguem a especificacao: Resumo, Operacao diaria, Clientes e contas,
+ * Despesas, Servicos e precos.
  */
 export function useNavData() {
   return useMemo(
@@ -39,6 +44,60 @@ export function useNavData() {
             title: 'Resumo',
             path: paths.dashboard.root,
             icon: ICONS.dashboard,
+          },
+        ],
+      },
+
+      {
+        subheader: 'Operação diária',
+        items: [
+          {
+            title: 'Entradas',
+            path: paths.dashboard.entry.list,
+            icon: ICONS.entries,
+            roles: [Authorities.READ_ENTRIES],
+          },
+          {
+            title: 'Pagamentos',
+            path: paths.dashboard.payment.list,
+            icon: ICONS.payments,
+            roles: [Authorities.READ_PAYMENTS],
+          },
+        ],
+      },
+
+      {
+        subheader: 'Clientes e contas',
+        items: [
+          {
+            title: 'Clientes',
+            path: paths.dashboard.client.list,
+            icon: ICONS.clients,
+            roles: [Authorities.READ_CLIENTS],
+          },
+          {
+            title: 'Viaturas',
+            path: paths.dashboard.vehicle.list,
+            icon: ICONS.vehicles,
+            roles: [Authorities.READ_VEHICLES],
+          },
+        ],
+      },
+
+      {
+        subheader: 'Gestão',
+        items: [
+          {
+            title: 'Despesas',
+            path: paths.dashboard.expense.list,
+            icon: ICONS.expenses,
+            roles: [Authorities.READ_EXPENSES],
+          },
+          {
+            title: 'Serviços e preços',
+            path: paths.dashboard.service.list,
+            icon: ICONS.services,
+            roles: [Authorities.READ_SERVICES],
           },
         ],
       },

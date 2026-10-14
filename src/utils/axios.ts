@@ -70,6 +70,6 @@ export const endpoints = {
     provinces: '/provinces',
     districts: '/districts',
     companies: '/companies',
-    export: '/export',
+    export: '/reports/export',
   },
 };
