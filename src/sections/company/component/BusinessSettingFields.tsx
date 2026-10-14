@@ -12,8 +12,8 @@ export const BusinessSettingFields: React.FC = () => (
         label="Nome da empresa"
       />
       <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
-        O restante perfil da empresa (NUIT, contactos, morada, logótipo e moeda)
-        pode ser completado depois em Definições.
+        O restante perfil da empresa (NUIT, contactos, morada, logótipo e moeda) pode ser completado
+        depois em Definições.
       </Typography>
     </Grid>
   </Grid>

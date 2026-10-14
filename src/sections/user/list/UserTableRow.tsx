@@ -4,34 +4,40 @@ import {
   Box,
   Button,
   Checkbox,
-  Chip, FormControl,
-  IconButton, InputLabel,
+  Chip,
+  FormControl,
+  IconButton,
+  InputLabel,
   ListItemText,
   MenuItem,
-  Modal, OutlinedInput, Select, SelectChangeEvent, Stack,
+  Modal,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
+  Stack,
   TableCell,
   TableRow,
 } from '@mui/material';
 // @types
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { Theme, useTheme } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
-import {IUserCreate, IUserRow} from '../../../types/user';
+import { enqueueSnackbar } from 'notistack';
+import { IUserCreate, IUserRow } from '../../../types/user';
 // components
 import Iconify from '../../../components/iconify';
 import MenuPopover from '../../../components/menu-popover';
 import ConfirmDialog from '../../../components/custom-dialog/confirm-dialog';
-import {paths} from "../../../routes/paths";
-import Label from "../../../components/label";
-import {isAdmin} from "../../../auth/context/jwt/utils";
+import { paths } from '../../../routes/paths';
+import Label from '../../../components/label';
+import { isAdmin } from '../../../auth/context/jwt/utils';
 import { Roles } from '../../../utils/authorities';
 import { initialRolePageData, IRole, IRolePage } from '../../../types/role';
 import { ITenant, ITenantPage } from '../../../types/tenant';
 import { useGetRolesQuery } from '../../../redux/services/roleService';
 import { useGetCompaniesQuery } from '../../../redux/services/companyService';
-import { enqueueSnackbar } from 'notistack';
 import { useUpdateUserMutation } from '../../../redux/services/userService';
 // ----------------------------------------------------------------------
 
@@ -42,37 +48,30 @@ type Props = {
   onDeleteRow: VoidFunction;
 };
 
-export default function UserTableRow({
-  row,
-  selected,
-  onSelectRow,
-  onDeleteRow,
-}: Props) {
-
+export default function UserTableRow({ row, selected, onSelectRow, onDeleteRow }: Props) {
   const initialStateRole: IRolePage = initialRolePageData;
 
   const [openConfirm, setOpenConfirm] = useState(false);
   const [open, setOpen] = useState(false);
   const { currentData: rolesList } = useGetRolesQuery(initialStateRole);
-  const [initialState] = useState<ITenantPage>({size: 1000, page: 0});
+  const [initialState] = useState<ITenantPage>({ size: 1000, page: 0 });
   const [roles, setRoles] = useState<string[]>([]);
   const [tenants, setTenants] = useState<string[]>([]);
   const [updateUser] = useUpdateUserMutation();
 
-  const { currentData : tenantsList } = useGetCompaniesQuery(initialState)
-
+  const { currentData: tenantsList } = useGetCompaniesQuery(initialState);
 
   const [openPopover, setOpenPopover] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     const rList: string[] = [];
-    row?.roles?.forEach(role => {
+    row?.roles?.forEach((role) => {
       rList.push(role.id.toString());
     });
     setRoles(rList);
 
     const tList: string[] = [];
-    row?.businessLocations?.forEach(bl => {
+    row?.businessLocations?.forEach((bl) => {
       if (bl.id) {
         tList.push(bl.id.toString());
       }
@@ -89,7 +88,9 @@ export default function UserTableRow({
     const selecteds = typeof value === 'string' ? value.split(',') : value;
     selecteds.forEach((item: string) => listString.push(item.toString()));
 
-    const finalList = listString.filter((item, _, array) => array.indexOf(item) === array.lastIndexOf(item));
+    const finalList = listString.filter(
+      (item, _, array) => array.indexOf(item) === array.lastIndexOf(item)
+    );
 
     setRoles(finalList);
   };
@@ -103,11 +104,13 @@ export default function UserTableRow({
     const selecteds = typeof value === 'string' ? value.split(',') : value;
     selecteds.forEach((item: string) => listString.push(item.toString()));
 
-    const finalList = listString.filter((item, _, array) => array.indexOf(item) === array.lastIndexOf(item));
+    const finalList = listString.filter(
+      (item, _, array) => array.indexOf(item) === array.lastIndexOf(item)
+    );
 
     setTenants(finalList);
   };
-  
+
   const navigate = useNavigate();
 
   const handleOpenConfirm = () => {
@@ -139,7 +142,8 @@ export default function UserTableRow({
 
   const theme = useTheme();
 
-  const userStatusFormat = (usertStatus : string) => usertStatus === 'ACTIVE' ? 'Activa' : 'Suspensa';
+  const userStatusFormat = (usertStatus: string) =>
+    usertStatus === 'ACTIVE' ? 'Activa' : 'Suspensa';
 
   const style = {
     position: 'absolute' as 'absolute',
@@ -154,19 +158,16 @@ export default function UserTableRow({
     pb: 3,
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px'
+    gap: '16px',
   };
 
-  const defaultValues = useMemo(
-    () => ({}),
-    [],
-  );
+  const defaultValues = useMemo(() => ({}), []);
 
   const methods = useForm();
   const {
     reset,
     handleSubmit,
-    formState: {isSubmitting},
+    formState: { isSubmitting },
   } = methods;
 
   const ITEM_HEIGHT = 48;
@@ -202,7 +203,6 @@ export default function UserTableRow({
     };
   }
 
-
   const onSubmit = handleSubmit(async (data) => {
     const rolesIds: number[] = [];
     roles?.forEach((item: string) => rolesIds.push(parseInt(item, 10)));
@@ -211,24 +211,28 @@ export default function UserTableRow({
     tenants?.forEach((item: string) => tenantsIds.push(parseInt(item, 10)));
 
     try {
-        const payload: IUserCreate = {
-          ...row,
-          firstName: '',
-          surname: '',
-          rolesIds,
-          locationsIds: tenantsIds,
-        };
-        await updateUser({ data: payload, id: row?.id, isAccessUpdate: true }).unwrap();
-        handleCloseAccessModal();
-        enqueueSnackbar('Actualizado com sucesso!');
+      const payload: IUserCreate = {
+        ...row,
+        firstName: '',
+        surname: '',
+        rolesIds,
+        locationsIds: tenantsIds,
+      };
+      await updateUser({ data: payload, id: row?.id, isAccessUpdate: true }).unwrap();
+      handleCloseAccessModal();
+      enqueueSnackbar('Actualizado com sucesso!');
     } catch (error) {
       if (error?.data.length > 0) {
         error.data.forEach((item: string) => enqueueSnackbar(item, { variant: 'error' }));
       } else if (error?.status === 400) {
-        enqueueSnackbar(error?.data?.message || 'Verifique os dados introduzidos.', { variant: 'error' });
+        enqueueSnackbar(error?.data?.message || 'Verifique os dados introduzidos.', {
+          variant: 'error',
+        });
       } else {
-        enqueueSnackbar(error.status === 500 ? 'Ocorreu um erro inesperado' : 'Verifique os dados introduzidos.',
-          { variant: 'error' });
+        enqueueSnackbar(
+          error.status === 500 ? 'Ocorreu um erro inesperado' : 'Verifique os dados introduzidos.',
+          { variant: 'error' }
+        );
       }
     }
   });
@@ -242,33 +246,30 @@ export default function UserTableRow({
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <ListItemText
-              primary={row?.name}
-              secondary=''
-              primaryTypographyProps={{ typography: 'body2' }}
+            primary={row?.name}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
           />
         </TableCell>
         <TableCell align="left">
-          {row?.roles.map(item => <Chip size='small' key={item.id} label={item.displayName} variant="outlined" />)}
+          {row?.roles.map((item) => (
+            <Chip size="small" key={item.id} label={item.displayName} variant="outlined" />
+          ))}
         </TableCell>
-        <TableCell align="left">
-          {row?.username}
-        </TableCell>
+        <TableCell align="left">{row?.username}</TableCell>
         <TableCell align="left">
           <Label
-              variant="soft"
-              color={
-                  (row?.userStatus === 'ACTIVE' && 'success') ||
-                  (row?.userStatus === 'SUSPENDED' && 'warning') ||
-                  'default'
-              }
+            variant="soft"
+            color={
+              (row?.userStatus === 'ACTIVE' && 'success') ||
+              (row?.userStatus === 'SUSPENDED' && 'warning') ||
+              'default'
+            }
           >
             {userStatusFormat(row?.userStatus)}
           </Label>
-
         </TableCell>
-        <TableCell align="left">
-          {row?.email}
-        </TableCell>
+        <TableCell align="left">{row?.email}</TableCell>
 
         <TableCell align="right">
           <IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
@@ -283,16 +284,18 @@ export default function UserTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        {isAdmin() && <MenuItem
-          onClick={() => {
-            handleOpenConfirm();
-            handleClosePopover();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="eva:trash-2-outline" />
-          Remover
-        </MenuItem>}
+        {isAdmin() && (
+          <MenuItem
+            onClick={() => {
+              handleOpenConfirm();
+              handleClosePopover();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="eva:trash-2-outline" />
+            Remover
+          </MenuItem>
+        )}
 
         <MenuItem
           onClick={() => {
@@ -303,9 +306,7 @@ export default function UserTableRow({
           Editar
         </MenuItem>
 
-        <MenuItem
-          onClick={handleOpenAccessModal}
-        >
+        <MenuItem onClick={handleOpenAccessModal}>
           <Iconify icon="eva:shield-outline" />
           Modificar acesso
         </MenuItem>
@@ -317,11 +318,14 @@ export default function UserTableRow({
         title="Remover"
         content="Tem certeza que deseja remover?"
         action={
-          <Button variant="contained" color="error" onClick={() => {
-              setOpenConfirm(false)
-              onDeleteRow()
-            }
-          }>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              setOpenConfirm(false);
+              onDeleteRow();
+            }}
+          >
             Remover
           </Button>
         }
@@ -333,7 +337,6 @@ export default function UserTableRow({
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-
         <Box sx={{ ...style }}>
           <FormProvider methods={methods} onSubmit={onSubmit}>
             <FormControl>
@@ -349,7 +352,7 @@ export default function UserTableRow({
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selectedTennat.map((item: string, i: number) => {
                       const foundTenant = tenantsList?.content?.find((obj) => obj.id === +item);
-                      return (<Chip key={i} label={foundTenant?.tenantName} />);
+                      return <Chip key={i} label={foundTenant?.tenantName} />;
                     })}
                   </Box>
                 )}
@@ -379,35 +382,43 @@ export default function UserTableRow({
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selectedRole.map((item: string, i: number) => {
                       const foundRole = rolesList?.content?.find((obj) => obj.id === +item);
-                      return (<Chip key={i} label={foundRole?.displayName} />);
+                      return <Chip key={i} label={foundRole?.displayName} />;
                     })}
                   </Box>
                 )}
                 MenuProps={MenuProps}
               >
-                {rolesList?.content?.filter(item => item.name !== Roles.SA).map((item: IRole) => (
-                  <MenuItem
-                    key={item.id}
-                    value={String(item.id)}
-                    style={getStyles(item.displayName, roles, theme)}
-                  >
-                    {item.displayName}
-                  </MenuItem>
-                ))}
+                {rolesList?.content
+                  ?.filter((item) => item.name !== Roles.SA)
+                  .map((item: IRole) => (
+                    <MenuItem
+                      key={item.id}
+                      value={String(item.id)}
+                      style={getStyles(item.displayName, roles, theme)}
+                    >
+                      {item.displayName}
+                    </MenuItem>
+                  ))}
               </Select>
             </FormControl>
-          <Stack alignItems="flex-end" justifyContent="end" gap={1} display="flex" flexDirection="row" sx={{mt: 3}}>
-            <Button variant="outlined" color="inherit" onClick={handleCloseAccessModal}>
-              Fechar
-            </Button>
-            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-              Guardar
-            </LoadingButton>
-          </Stack>
+            <Stack
+              alignItems="flex-end"
+              justifyContent="end"
+              gap={1}
+              display="flex"
+              flexDirection="row"
+              sx={{ mt: 3 }}
+            >
+              <Button variant="outlined" color="inherit" onClick={handleCloseAccessModal}>
+                Fechar
+              </Button>
+              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                Guardar
+              </LoadingButton>
+            </Stack>
           </FormProvider>
         </Box>
       </Modal>
-
     </>
   );
 }

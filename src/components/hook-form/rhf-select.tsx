@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 // @mui
 import { Theme, SxProps } from '@mui/material/styles';
@@ -12,7 +12,6 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import FormHelperText from '@mui/material/FormHelperText';
 import Select, { SelectProps } from '@mui/material/Select';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
-import {useState} from "react";
 
 // --------------------------------------------------- -------------------
 
@@ -22,19 +21,19 @@ type RHFSelectProps = TextFieldProps & {
   maxHeight?: boolean | number;
   children: React.ReactNode;
   PaperPropsSx?: SxProps<Theme>;
-  showSearchBox?: boolean
+  showSearchBox?: boolean;
 };
 
 export function RHFSelect({
-                            name,
-                            native,
-                            maxHeight = 220,
-                            helperText,
-                            children,
-                            PaperPropsSx,
-                            showSearchBox,
-                            ...other
-                          }: RHFSelectProps) {
+  name,
+  native,
+  maxHeight = 220,
+  helperText,
+  children,
+  PaperPropsSx,
+  showSearchBox,
+  ...other
+}: RHFSelectProps) {
   const { control } = useFormContext();
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -51,45 +50,47 @@ export function RHFSelect({
   });
 
   return (
-      <Controller
-          name={name}
-          control={control}
-          render={({ field, fieldState: { error } }) => (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error } }) => (
+        <TextField
+          {...field}
+          select
+          fullWidth
+          SelectProps={{
+            native,
+            MenuProps: {
+              PaperProps: {
+                sx: {
+                  ...(!native && {
+                    maxHeight: typeof maxHeight === 'number' ? maxHeight : 'unset',
+                  }),
+                  ...PaperPropsSx,
+                },
+              },
+            },
+            sx: { textTransform: 'capitalize' },
+          }}
+          error={!!error}
+          helperText={error ? error?.message : helperText}
+          {...other}
+        >
+          {showSearchBox && (
+            <MenuItem disabled>
               <TextField
-                  {...field}
-                  select
-                  fullWidth
-                  SelectProps={{
-                    native,
-                    MenuProps: {
-                      PaperProps: {
-                        sx: {
-                          ...(!native && {
-                            maxHeight: typeof maxHeight === 'number' ? maxHeight : 'unset',
-                          }),
-                          ...PaperPropsSx,
-                        },
-                      },
-                    },
-                    sx: { textTransform: 'capitalize' },
-                  }}
-                  error={!!error}
-                  helperText={error ? error?.message : helperText}
-                  {...other}
-              >
-                  {showSearchBox && <MenuItem disabled  >
-                  <TextField
-                      placeholder="Pesquisar..."
-                      variant="outlined"
-                      size="small"
-                      fullWidth
-                      onChange={handleSearch}
-                  />
-                </MenuItem>}
-                {filteredChildren}
-              </TextField>
+                placeholder="Pesquisar..."
+                variant="outlined"
+                size="small"
+                fullWidth
+                onChange={handleSearch}
+              />
+            </MenuItem>
           )}
-      />
+          {filteredChildren}
+        </TextField>
+      )}
+    />
   );
 }
 

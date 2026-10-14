@@ -22,6 +22,7 @@ import { useGetVehiclesQuery } from 'src/redux/services/vehicleService';
 import { IVehicle, RecordStatus } from 'src/types/detailing';
 //
 import PagedTable from '../shared/PagedTable';
+import MobileCard from '../shared/MobileCard';
 
 // ----------------------------------------------------------------------
 
@@ -103,6 +104,24 @@ export default function VehicleListView() {
             setPage(0);
           }}
           minWidth={640}
+          mobileRenderRow={(row) => (
+            <MobileCard
+              key={row.id}
+              title={row.plate}
+              subtitle={[row.brand, row.model].filter(Boolean).join(' ') || undefined}
+              openLabel={`Abrir cliente ${row.clientName}`}
+              onOpen={() => router.push(paths.dashboard.client.detail(row.clientId))}
+              status={
+                <Label variant="soft" color={row.status === 'ACTIVE' ? 'success' : 'default'}>
+                  {row.status === 'ACTIVE' ? 'Activa' : 'Arquivada'}
+                </Label>
+              }
+              rows={[
+                { label: 'Categoria', value: row.categoryLabel },
+                { label: 'Proprietário', value: row.clientName },
+              ]}
+            />
+          )}
           renderRow={(row) => (
             <TableRow
               key={row.id}

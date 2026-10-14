@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useSessionState } from 'src/hooks/use-session-state';
 // @mui
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -22,6 +23,7 @@ import {
   PaymentMethod,
 } from 'src/types/detailing';
 //
+import HeaderPrimaryAction from '../shared/HeaderPrimaryAction';
 import ExportButton from '../shared/ExportButton';
 import PaymentFormDialog from './PaymentFormDialog';
 import PaymentsTable from './PaymentsTable';
@@ -31,11 +33,11 @@ import PaymentsTable from './PaymentsTable';
 export default function PaymentListView() {
   const settings = useSettingsContext();
 
-  const [term, setTerm] = useState('');
-  const [startDate, setStartDate] = useState(todayMaputo());
-  const [endDate, setEndDate] = useState(todayMaputo());
-  const [method, setMethod] = useState<PaymentMethod | ''>('');
-  const [kind, setKind] = useState<MovementKind | ''>('');
+  const [term, setTerm] = useSessionState('payments.term', '');
+  const [startDate, setStartDate] = useSessionState('payments.startDate', todayMaputo());
+  const [endDate, setEndDate] = useSessionState('payments.endDate', todayMaputo());
+  const [method, setMethod] = useSessionState<PaymentMethod | ''>('payments.method', '');
+  const [kind, setKind] = useSessionState<MovementKind | ''>('payments.kind', '');
   const [createOpen, setCreateOpen] = useState(false);
 
   const filter = {
@@ -110,27 +112,17 @@ export default function PaymentListView() {
       onChange: setTerm,
       onClear: () => setTerm(''),
     },
-    actions: (
-      <Stack direction="row" spacing={1}>
-        {hasPermission([Authorities.EXPORT_PAYMENTS]) && (
-          <ExportButton
-            context="payments"
-            fileName="recebimentos"
-            params={filter}
-            formats={['EXCEL']}
-          />
-        )}
-        {hasPermission([Authorities.CREATE_PAYMENTS]) && (
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => setCreateOpen(true)}
-          >
-            Registar pagamento
-          </Button>
-        )}
-      </Stack>
-    ),
+    secondaryActions: hasPermission([Authorities.EXPORT_PAYMENTS]) ? (
+      <ExportButton
+        context="payments"
+        fileName="recebimentos"
+        params={filter}
+        formats={['EXCEL']}
+      />
+    ) : null,
+    primaryAction: hasPermission([Authorities.CREATE_PAYMENTS]) ? (
+      <HeaderPrimaryAction label="Registar pagamento" onClick={() => setCreateOpen(true)} />
+    ) : null,
   });
 
   return (
@@ -139,7 +131,7 @@ export default function PaymentListView() {
         <title>Pagamentos</title>
       </Helmet>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-        <PaymentsTable filter={filter} />
+        <PaymentsTable filter={filter} persistKey="payments" />
       </Container>
       <PaymentFormDialog open={createOpen} onClose={() => setCreateOpen(false)} />
     </>

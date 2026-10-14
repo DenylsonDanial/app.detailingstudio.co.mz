@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -28,6 +27,7 @@ import {
   VEHICLE_CATEGORY_LABELS,
   VehicleCategory,
 } from 'src/types/detailing';
+import ResponsiveDialog from '../shared/ResponsiveDialog';
 
 // ----------------------------------------------------------------------
 
@@ -114,7 +114,7 @@ export default function ServiceFormDialog({ open, service, onClose }: Props) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <ResponsiveDialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{service ? 'Editar serviço' : 'Novo serviço'}</DialogTitle>
       <DialogContent>
         <Stack spacing={2.5} sx={{ pt: 1 }}>
@@ -227,6 +227,6 @@ export default function ServiceFormDialog({ open, service, onClose }: Props) {
           Guardar
         </LoadingButton>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

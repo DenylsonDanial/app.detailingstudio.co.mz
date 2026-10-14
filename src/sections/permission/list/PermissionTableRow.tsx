@@ -1,14 +1,23 @@
-import {useState} from 'react';
+import { useState } from 'react';
 // @mui
-import {Box, Button, Checkbox, IconButton, MenuItem, Modal, TableCell, TableRow,} from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  IconButton,
+  MenuItem,
+  Modal,
+  TableCell,
+  TableRow,
+} from '@mui/material';
 // @types
-import {IPermission} from '../../../types/permission';
+import { IPermission } from '../../../types/permission';
 // components
 import Iconify from '../../../components/iconify';
 import MenuPopover from '../../../components/menu-popover';
 import ConfirmDialog from '../../../components/custom-dialog/confirm-dialog';
-import PermissionNewEditForm from "../PermissionNewEditForm";
-import Label from "../../../components/label";
+import PermissionNewEditForm from '../PermissionNewEditForm';
+import Label from '../../../components/label';
 
 // ----------------------------------------------------------------------
 
@@ -19,12 +28,7 @@ type Props = {
   onDeleteRow: VoidFunction;
 };
 
-export default function PermissionTableRow({
-  row,
-  selected,
-  onSelectRow,
-  onDeleteRow,
-}: Props) {
+export default function PermissionTableRow({ row, selected, onSelectRow, onDeleteRow }: Props) {
   const { name, displayName, contextPath, bundler } = row;
 
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -72,18 +76,13 @@ export default function PermissionTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-
         <TableCell align="left">{name}</TableCell>
 
         <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
           {displayName}
         </TableCell>
-        <TableCell align="left">
-          {contextPath}
-        </TableCell>
-        <TableCell align="left">
-          {bundler}
-        </TableCell>
+        <TableCell align="left">{contextPath}</TableCell>
+        <TableCell align="left">{bundler}</TableCell>
 
         <TableCell align="right">
           <IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
@@ -125,23 +124,26 @@ export default function PermissionTableRow({
         title="Remover"
         content="Tem certeza que deseja remover?"
         action={
-          <Button variant="contained" color="error" onClick={() => {
-              setOpenConfirm(false)
-              onDeleteRow()
-            }
-          }>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              setOpenConfirm(false);
+              onDeleteRow();
+            }}
+          >
             Remover
           </Button>
         }
       />
       <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="parent-modal-title"
-          aria-describedby="parent-modal-description"
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="parent-modal-title"
+        aria-describedby="parent-modal-description"
       >
         <Box sx={{ ...style }}>
-          <Label >Actualizar permissão</Label>
+          <Label>Actualizar permissão</Label>
           <PermissionNewEditForm currentPermission={row} isEdit closeModal={handleClose} />
         </Box>
       </Modal>

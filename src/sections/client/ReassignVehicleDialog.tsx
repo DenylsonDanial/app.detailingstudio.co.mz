@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -16,6 +15,7 @@ import { getApiErrorMessage } from 'src/utils/axios';
 import { useReassignVehicleMutation } from 'src/redux/services/vehicleService';
 // types
 import { IClient, IVehicle } from 'src/types/detailing';
+import ResponsiveDialog from '../shared/ResponsiveDialog';
 //
 import ClientAutocomplete from '../shared/ClientAutocomplete';
 
@@ -51,7 +51,7 @@ export default function ReassignVehicleDialog({ vehicle, onClose }: Props) {
   };
 
   return (
-    <Dialog open={!!vehicle} onClose={onClose} fullWidth maxWidth="sm">
+    <ResponsiveDialog open={!!vehicle} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Reassociar viatura {vehicle?.plate}</DialogTitle>
       <DialogContent>
         <Stack spacing={2.5} sx={{ pt: 1 }}>
@@ -82,6 +82,6 @@ export default function ReassignVehicleDialog({ vehicle, onClose }: Props) {
           Reassociar
         </LoadingButton>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

@@ -39,7 +39,7 @@ export default function NavList({ data, depth, hasChild, config }: NavListRootPr
 
   const handleClose = useCallback(() => {
     setOpen(false);
-  }, [pathname]);
+  }, []);
 
   return (
     <>

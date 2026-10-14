@@ -65,7 +65,7 @@ const NavItem = forwardRef<HTMLDivElement, Props>(
               fontSize: 10,
               lineHeight: '16px',
               textAlign: 'center',
-              textTransform: 'capitalize',
+              textTransform: 'none',
               fontWeight: active ? 'fontWeightBold' : 'fontWeightSemiBold',
               ...(subItem && {
                 textAlign: 'unset',

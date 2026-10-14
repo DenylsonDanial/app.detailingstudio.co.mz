@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
@@ -22,7 +23,6 @@ import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 //
 import { HEADER, NAV } from '../config-layout';
-import { useCallback, useEffect, useState } from 'react';
 import { IUser } from '../../types/user';
 import { useGetLoggedUserMutation } from '../../redux/services/userService';
 import CompanySwitch from '../_common/company-switch';
@@ -41,7 +41,16 @@ export default function Header({ onOpenNav }: Props) {
 
   const settings = useSettingsContext();
 
-  const { title, filters, filtersActive, onResetFilters, actions, search } = usePageHeaderState();
+  const {
+    title,
+    filters,
+    filtersActive,
+    onResetFilters,
+    primaryAction,
+    secondaryActions,
+    actions,
+    search,
+  } = usePageHeaderState();
 
   const isNavHorizontal = settings.themeLayout === 'horizontal';
 
@@ -90,7 +99,11 @@ export default function Header({ onOpenNav }: Props) {
       {lgUp && isNavHorizontal && <Logo sx={{ mr: 2.5 }} />}
 
       {!lgUp && (
-        <IconButton onClick={onOpenNav}>
+        <IconButton
+          onClick={onOpenNav}
+          aria-label="Abrir navegação"
+          sx={{ width: 44, height: 44, flexShrink: 0 }}
+        >
           <SvgColor src="/assets/icons/navbar/ic_menu_item.svg" />
         </IconButton>
       )}
@@ -98,11 +111,17 @@ export default function Header({ onOpenNav }: Props) {
       {title && (
         <Typography
           variant="h5"
+          component="h1"
+          title={title}
           noWrap
           sx={{
             ml: !lgUp ? 1 : 0,
-            mr: 2,
-            flexShrink: 0,
+            mr: { xs: 0.5, sm: 2 },
+            minWidth: 0,
+            flexGrow: 1,
+            flexShrink: 1,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
             color: 'text.primary',
             fontWeight: 700,
             lineHeight: 1.3,
@@ -113,18 +132,19 @@ export default function Header({ onOpenNav }: Props) {
       )}
 
       <Stack
-        flexGrow={1}
+        flexGrow={title ? 0 : 1}
         direction="row"
         alignItems="center"
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
-        sx={{ minWidth: 0 }}
+        sx={{ minWidth: 0, flexShrink: 0 }}
       >
         {filters && (
           <IconButton
             color={filtersActive || filtersOpen ? 'primary' : 'default'}
             onClick={() => setFiltersOpen(true)}
             aria-label="Filtros"
+            sx={{ width: 44, height: 44 }}
           >
             <Badge color="error" variant="dot" invisible={!filtersActive}>
               <Iconify icon="ic:round-filter-list" />
@@ -137,6 +157,8 @@ export default function Header({ onOpenNav }: Props) {
             <IconButton
               color={hasSearchFilter || searchOpen ? 'primary' : 'default'}
               onClick={(event) => setSearchAnchor(event.currentTarget)}
+              aria-label="Procurar"
+              sx={{ width: 44, height: 44 }}
             >
               <Badge color="error" variant="dot" invisible={!hasSearchFilter}>
                 <Iconify icon="eva:search-fill" />
@@ -190,9 +212,13 @@ export default function Header({ onOpenNav }: Props) {
           </>
         )}
 
-        <TopbarMoreMenu />
+        {/* Em mobile o menu so aparece quando ha accoes secundarias, para dar espaco ao titulo. */}
+        {(lgUp || secondaryActions) && (
+          <TopbarMoreMenu actions={!lgUp ? secondaryActions : undefined} />
+        )}
 
-        {actions}
+        {lgUp && secondaryActions}
+        {primaryAction ?? actions}
 
         <CompanySwitch loggedUser={loggedUser} />
       </Stack>
@@ -232,7 +258,7 @@ export default function Header({ onOpenNav }: Props) {
         <Toolbar
           sx={{
             height: 1,
-            px: { lg: 5 },
+            px: { xs: 1, sm: 2, lg: 5 },
           }}
         >
           {renderContent}

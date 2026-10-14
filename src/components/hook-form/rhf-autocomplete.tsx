@@ -2,7 +2,7 @@ import { useFormContext, Controller } from 'react-hook-form';
 // @mui
 import TextField from '@mui/material/TextField';
 import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
-import { AutocompleteFreeSoloValueMapping } from '@mui/base';
+import { AutocompleteFreeSoloValueMapping } from '@mui/material/useAutocomplete';
 
 // ----------------------------------------------------------------------
 
@@ -17,7 +17,6 @@ interface Props<
   placeholder?: string;
   helperText?: React.ReactNode;
 }
-
 
 export default function RHFAutocomplete<
   T,

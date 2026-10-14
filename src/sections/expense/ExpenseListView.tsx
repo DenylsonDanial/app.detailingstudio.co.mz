@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useSessionState } from 'src/hooks/use-session-state';
 // @mui
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -35,8 +36,10 @@ import {
   PaymentMethod,
 } from 'src/types/detailing';
 //
+import HeaderPrimaryAction from '../shared/HeaderPrimaryAction';
 import ExportButton from '../shared/ExportButton';
 import PagedTable from '../shared/PagedTable';
+import MobileCard from '../shared/MobileCard';
 import ReasonDialog from '../shared/ReasonDialog';
 import { MovementLabel } from '../shared/StatusLabels';
 import ExpenseCategoriesDialog from './ExpenseCategoriesDialog';
@@ -59,13 +62,13 @@ export default function ExpenseListView() {
   const settings = useSettingsContext();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [term, setTerm] = useState('');
-  const [startDate, setStartDate] = useState(todayMaputo());
-  const [endDate, setEndDate] = useState(todayMaputo());
-  const [categoryId, setCategoryId] = useState<number | ''>('');
-  const [method, setMethod] = useState<PaymentMethod | ''>('');
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(25);
+  const [term, setTerm] = useSessionState('expenses.term', '');
+  const [startDate, setStartDate] = useSessionState('expenses.startDate', todayMaputo());
+  const [endDate, setEndDate] = useSessionState('expenses.endDate', todayMaputo());
+  const [categoryId, setCategoryId] = useSessionState<number | ''>('expenses.categoryId', '');
+  const [method, setMethod] = useSessionState<PaymentMethod | ''>('expenses.method', '');
+  const [page, setPage] = useSessionState('expenses.page', 0);
+  const [size, setSize] = useSessionState('expenses.size', 25);
   const [createOpen, setCreateOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [toReverse, setToReverse] = useState<IExpense | null>(null);
@@ -191,8 +194,8 @@ export default function ExpenseListView() {
       },
       onClear: () => setTerm(''),
     },
-    actions: (
-      <Stack direction="row" spacing={1}>
+    secondaryActions: (
+      <>
         {hasPermission([Authorities.UPDATE_EXPENSES]) && (
           <Button variant="outlined" color="inherit" onClick={() => setCategoriesOpen(true)}>
             Categorias
@@ -206,17 +209,11 @@ export default function ExpenseListView() {
             formats={['EXCEL']}
           />
         )}
-        {hasPermission([Authorities.CREATE_EXPENSES]) && (
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => setCreateOpen(true)}
-          >
-            Registar despesa
-          </Button>
-        )}
-      </Stack>
+      </>
     ),
+    primaryAction: hasPermission([Authorities.CREATE_EXPENSES]) ? (
+      <HeaderPrimaryAction label="Registar despesa" onClick={() => setCreateOpen(true)} />
+    ) : null,
   });
 
   return (
@@ -242,6 +239,37 @@ export default function ExpenseListView() {
               setSize(value);
               setPage(0);
             }}
+            mobileRenderRow={(row) => (
+              <MobileCard
+                key={row.id}
+                title={row.description}
+                subtitle={`${row.number} · ${formatDate(row.expenseDate)}`}
+                status={<MovementLabel kind={row.kind} status={row.status} />}
+                rows={[
+                  { label: 'Categoria', value: row.categoryName },
+                  { label: 'Método', value: PAYMENT_METHOD_LABELS[row.method] },
+                  ...(row.reason ? [{ label: 'Motivo', value: row.reason }] : []),
+                  {
+                    label: 'Valor',
+                    value: formatMzn(row.amount),
+                    emphasis: true,
+                    color: row.amount < 0 ? 'error.main' : undefined,
+                  },
+                ]}
+                actions={
+                  canReverse && row.kind === 'EXPENSE' && row.status === 'VALID' ? (
+                    <Button
+                      color="error"
+                      startIcon={<Iconify icon="solar:undo-left-round-bold-duotone" />}
+                      onClick={() => setToReverse(row)}
+                      sx={{ minHeight: 44 }}
+                    >
+                      Corrigir
+                    </Button>
+                  ) : undefined
+                }
+              />
+            )}
             renderRow={(row) => (
               <TableRow key={row.id} hover>
                 <TableCell>{row.number}</TableCell>
@@ -271,7 +299,11 @@ export default function ExpenseListView() {
                 <TableCell align="right">
                   {canReverse && row.kind === 'EXPENSE' && row.status === 'VALID' && (
                     <Tooltip title="Corrigir (estorno)">
-                      <IconButton color="error" onClick={() => setToReverse(row)}>
+                      <IconButton
+                        color="error"
+                        aria-label="Corrigir (estorno)"
+                        onClick={() => setToReverse(row)}
+                      >
                         <Iconify icon="solar:undo-left-round-bold-duotone" />
                       </IconButton>
                     </Tooltip>

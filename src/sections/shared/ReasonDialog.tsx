@@ -2,12 +2,12 @@ import { ReactNode, useEffect, useState } from 'react';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import ResponsiveDialog from './ResponsiveDialog';
 
 // ----------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ export default function ReasonDialog({
   const invalid = reasonRequired && !reason.trim();
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <ResponsiveDialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ pt: 1 }}>
@@ -75,6 +75,6 @@ export default function ReasonDialog({
           {confirmLabel}
         </LoadingButton>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

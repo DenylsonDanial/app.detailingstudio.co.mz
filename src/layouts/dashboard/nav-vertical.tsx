@@ -3,10 +3,12 @@ import { useCallback, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import Logo from 'src/components/logo';
+import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { usePathname } from 'src/routes/hook';
 import { NavSectionVertical } from 'src/components/nav-section';
@@ -81,10 +83,18 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
 
   const renderContent = (
     <>
-      <Logo
-        appearance="onDark"
-        sx={{ flexShrink: 0, mt: 3, ml: 3, mb: 1, width: 200, height: 50 }}
-      />
+      <Stack direction="row" alignItems="center" sx={{ flexShrink: 0, mt: 3, mb: 1, ml: 3, mr: 1 }}>
+        <Logo appearance="onDark" sx={{ width: 200, height: 50, maxWidth: 'calc(100% - 52px)' }} />
+        {!lgUp && (
+          <IconButton
+            onClick={onCloseNav}
+            aria-label="Fechar navegação"
+            sx={{ ml: 'auto', width: 44, height: 44, color: 'common.white' }}
+          >
+            <Iconify icon="eva:close-fill" />
+          </IconButton>
+        )}
+      </Stack>
 
       <Scrollbar
         sx={{
@@ -137,6 +147,7 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
           PaperProps={{
             sx: {
               width: NAV.W_VERTICAL,
+              maxWidth: '85vw',
               // O override global do Drawer temporario pinta o papel com vidro claro
               // (bgBlur + background.paper) e ganha ao sx simples. && iguala a
               // especificidade para o menu mobile ficar preto, como no desktop.

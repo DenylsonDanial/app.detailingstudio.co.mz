@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -24,6 +23,7 @@ import {
   VEHICLE_CATEGORY_LABELS,
   VehicleCategory,
 } from 'src/types/detailing';
+import ResponsiveDialog from '../shared/ResponsiveDialog';
 
 // ----------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ export default function VehicleFormDialog({ open, clientId, vehicle, onClose, on
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <ResponsiveDialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{vehicle ? 'Editar viatura' : 'Nova viatura'}</DialogTitle>
       <DialogContent>
         <Stack spacing={2.5} sx={{ pt: 1 }}>
@@ -141,6 +141,6 @@ export default function VehicleFormDialog({ open, clientId, vehicle, onClose, on
           Guardar
         </LoadingButton>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -23,6 +22,7 @@ import {
 } from 'src/redux/services/expenseService';
 // types
 import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS, PaymentMethod } from 'src/types/detailing';
+import ResponsiveDialog from '../shared/ResponsiveDialog';
 
 // ----------------------------------------------------------------------
 
@@ -87,7 +87,7 @@ export default function ExpenseFormDialog({ open, onClose }: Props) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <ResponsiveDialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Registar despesa</DialogTitle>
       <DialogContent>
         <Stack spacing={2.5} sx={{ pt: 1 }}>
@@ -167,6 +167,6 @@ export default function ExpenseFormDialog({ open, onClose }: Props) {
           Guardar
         </LoadingButton>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

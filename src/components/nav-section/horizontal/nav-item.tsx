@@ -58,7 +58,7 @@ const NavItem = forwardRef<HTMLDivElement, Props>(
             primaryTypographyProps={{
               noWrap: true,
               typography: 'body2',
-              textTransform: 'capitalize',
+              textTransform: 'none',
               fontWeight: active ? 'fontWeightBold' : 'fontWeightMedium',
               ...(subItem && {
                 fontWeight: active ? 'fontWeightSemiBold' : 'fontWeightMedium',

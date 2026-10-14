@@ -1,17 +1,27 @@
-import {useState} from 'react';
+import { useState } from 'react';
 // @mui
-import {Box, Button, Checkbox, Chip, IconButton, MenuItem, Modal, TableCell, TableRow,} from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  IconButton,
+  MenuItem,
+  Modal,
+  TableCell,
+  TableRow,
+} from '@mui/material';
 // @types
-import {useNavigate} from "react-router-dom";
-import {IRole, IRoleCreate} from '../../../types/role';
+import { useNavigate } from 'react-router-dom';
+import { IRole, IRoleCreate } from '../../../types/role';
 // components
 import Iconify from '../../../components/iconify';
 import MenuPopover from '../../../components/menu-popover';
 import ConfirmDialog from '../../../components/custom-dialog/confirm-dialog';
-import RoleNewEditForm from "../RoleNewEditForm";
-import Label from "../../../components/label";
-import {IPermission} from "../../../types/permission";
-import {paths} from "../../../routes/paths";
+import RoleNewEditForm from '../RoleNewEditForm';
+import Label from '../../../components/label';
+import { IPermission } from '../../../types/permission';
+import { paths } from '../../../routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -22,21 +32,18 @@ type Props = {
   onDeleteRow: VoidFunction;
 };
 
-const idsFromPermissionList = (list : IPermission[]) => {
-  const listNumber : number[] = [];
-  list.forEach((item : IPermission) => { if(item.id) listNumber.push(item.id)});
+const idsFromPermissionList = (list: IPermission[]) => {
+  const listNumber: number[] = [];
+  list.forEach((item: IPermission) => {
+    if (item.id) listNumber.push(item.id);
+  });
   return listNumber;
-}
+};
 
-export default function RoleTableRow({
-  row,
-  selected,
-  onSelectRow,
-  onDeleteRow,
-}: Props) {
+export default function RoleTableRow({ row, selected, onSelectRow, onDeleteRow }: Props) {
   const { id, displayName, permissions } = row;
 
-  const rowForCreate : IRoleCreate = {...row, permissions: idsFromPermissionList(permissions)};
+  const rowForCreate: IRoleCreate = { ...row, permissions: idsFromPermissionList(permissions) };
 
   const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -134,23 +141,26 @@ export default function RoleTableRow({
         title="Remover"
         content="Tem certeza que deseja remover?"
         action={
-          <Button variant="contained" color="error" onClick={() => {
-              setOpenConfirm(false)
-              onDeleteRow()
-            }
-          }>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              setOpenConfirm(false);
+              onDeleteRow();
+            }}
+          >
             Remover
           </Button>
         }
       />
       <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="parent-modal-title"
-          aria-describedby="parent-modal-description"
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="parent-modal-title"
+        aria-describedby="parent-modal-description"
       >
         <Box sx={{ ...style }}>
-          <Label >Actualizar permissão</Label>
+          <Label>Actualizar permissão</Label>
           <RoleNewEditForm currentRole={rowForCreate} isEdit />
         </Box>
       </Modal>

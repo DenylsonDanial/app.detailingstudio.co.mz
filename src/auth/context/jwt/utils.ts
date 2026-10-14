@@ -1,11 +1,16 @@
-import { BaseQueryFn, FetchArgs, FetchBaseQueryError, fetchBaseQuery } from '@reduxjs/toolkit/query';
+import {
+  BaseQueryFn,
+  FetchArgs,
+  FetchBaseQueryError,
+  fetchBaseQuery,
+} from '@reduxjs/toolkit/query';
 // routes
 import { paths } from 'src/routes/paths';
 // utils
 import axios, { endpoints } from 'src/utils/axios';
 import { HOST_API, PATH_AFTER_LOGIN } from 'src/config-global';
-import { AuthUserType } from '../../types';
 import { Roles } from 'src/utils/authorities';
+import { AuthUserType } from '../../types';
 
 // ----------------------------------------------------------------------
 // O access token vive apenas em memoria: nao fica exposto a XSS atraves de
@@ -69,7 +74,7 @@ const persistTenantFromToken = (accessToken: string | null) => {
     localStorage.removeItem(ACTIVE_TENANT_KEY);
     return;
   }
-  const tenantId = jwtDecode(accessToken).tenantId;
+  const { tenantId } = jwtDecode(accessToken);
   if (typeof tenantId === 'string' && tenantId) {
     localStorage.setItem(ACTIVE_TENANT_KEY, tenantId);
   }
@@ -85,12 +90,9 @@ const scheduleRefresh = (exp?: number) => {
     return;
   }
   const msUntilRefresh = exp * 1000 - Date.now() - 60_000;
-  refreshTimer = setTimeout(
-    () => {
-      refreshSession().catch(() => endSession(true));
-    },
-    Math.max(msUntilRefresh, 5_000)
-  );
+  refreshTimer = setTimeout(() => {
+    refreshSession().catch(() => endSession(true));
+  }, Math.max(msUntilRefresh, 5_000));
 };
 
 export const setSession = (accessToken: string | null, refreshToken?: string | null) => {
@@ -158,11 +160,11 @@ let refreshInFlight: Promise<string> | null = null;
  * Base query que renova o token uma vez perante um 401 e repete o pedido.
  * Pedidos concorrentes partilham a mesma renovacao.
  */
-export const customBaseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
-  args,
-  api,
-  extraOptions
-) => {
+export const customBaseQuery: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
   let result = await rawBaseQuery(args, api, extraOptions);
 
   if (result.error?.status === 401 && getRefreshToken()) {

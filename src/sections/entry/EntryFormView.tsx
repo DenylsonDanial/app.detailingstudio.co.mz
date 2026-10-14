@@ -13,6 +13,7 @@ import { usePageHeader } from 'src/layouts/dashboard/page-header-context';
 import { useGetClientQuery } from 'src/redux/services/clientService';
 import { useGetEntryQuery } from 'src/redux/services/entryService';
 //
+import HeaderPrimaryAction from '../shared/HeaderPrimaryAction';
 import EntryForm from './EntryForm';
 
 // ----------------------------------------------------------------------
@@ -38,15 +39,14 @@ export default function EntryFormView() {
 
   usePageHeader({
     title,
-    actions: (
-      <Button
+    primaryAction: (
+      <HeaderPrimaryAction
+        label="Voltar"
+        icon="eva:arrow-back-fill"
         variant="soft"
         color="secondary"
-        startIcon={<Iconify icon="eva:arrow-back-fill" />}
         onClick={() => router.back()}
-      >
-        Voltar
-      </Button>
+      />
     ),
   });
 

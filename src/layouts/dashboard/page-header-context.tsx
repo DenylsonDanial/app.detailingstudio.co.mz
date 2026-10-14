@@ -24,6 +24,11 @@ export type PageHeaderState = {
   filtersActive?: boolean;
   /** Optional reset action shown in the filters drawer header. */
   onResetFilters?: VoidFunction;
+  /** Main page action, kept visible in compact form on mobile. */
+  primaryAction?: ReactNode;
+  /** Lower-priority actions shown directly on desktop and in the overflow menu on mobile. */
+  secondaryActions?: ReactNode;
+  /** Legacy action slot kept for pages that have not migrated yet. */
   actions?: ReactNode;
   search?: PageHeaderSearch | null;
 };

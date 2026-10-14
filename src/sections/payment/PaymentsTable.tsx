@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSessionState } from 'src/hooks/use-session-state';
 // @mui
+import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
@@ -17,23 +19,33 @@ import { useGetPaymentsQuery } from 'src/redux/services/paymentService';
 import { IPayment, IPaymentFilter, PAYMENT_METHOD_LABELS } from 'src/types/detailing';
 //
 import PagedTable, { Column } from '../shared/PagedTable';
+import MobileCard from '../shared/MobileCard';
 import { MovementLabel } from '../shared/StatusLabels';
 import PaymentReverseDialog from './PaymentReverseDialog';
 
 // ----------------------------------------------------------------------
 
 type Props = {
+  /** Guarda pagina e linhas por pagina ao abrir um registo e voltar. */
+  persistKey?: string;
   filter: IPaymentFilter;
   hideClient?: boolean;
 };
 
-export default function PaymentsTable({ filter, hideClient }: Props) {
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(25);
+export default function PaymentsTable({ filter, hideClient, persistKey }: Props) {
+  const [page, setPage] = useSessionState(persistKey ? `${persistKey}.page` : null, 0);
+  const [size, setSize] = useSessionState(persistKey ? `${persistKey}.size` : null, 25);
   const [toReverse, setToReverse] = useState<IPayment | null>(null);
 
   const filterKey = JSON.stringify(filter);
-  useEffect(() => setPage(0), [filterKey]);
+  const previousFilter = useRef(filterKey);
+  useEffect(() => {
+    // Volta a primeira pagina so quando o filtro muda, nao ao regressar a lista.
+    if (previousFilter.current !== filterKey) {
+      previousFilter.current = filterKey;
+      setPage(0);
+    }
+  }, [filterKey, setPage]);
 
   const { currentData, isFetching } = useGetPaymentsQuery({
     ...filter,
@@ -69,6 +81,38 @@ export default function PaymentsTable({ filter, hideClient }: Props) {
           setSize(value);
           setPage(0);
         }}
+        mobileRenderRow={(row) => (
+          <MobileCard
+            key={row.id}
+            title={row.number}
+            subtitle={formatDate(row.paymentDate)}
+            status={<MovementLabel kind={row.kind} status={row.status} refund={row.refund} />}
+            rows={[
+              ...(hideClient ? [] : [{ label: 'Cliente', value: row.clientName }]),
+              { label: 'Método', value: PAYMENT_METHOD_LABELS[row.method] },
+              ...(row.reference ? [{ label: 'Referência', value: row.reference }] : []),
+              ...(row.reason ? [{ label: 'Motivo', value: row.reason }] : []),
+              {
+                label: 'Montante',
+                value: formatMzn(row.amount),
+                emphasis: true,
+                color: row.amount < 0 ? 'error.main' : undefined,
+              },
+            ]}
+            actions={
+              canReverse && row.kind === 'PAYMENT' && row.status === 'VALID' ? (
+                <Button
+                  color="error"
+                  startIcon={<Iconify icon="solar:undo-left-round-bold-duotone" />}
+                  onClick={() => setToReverse(row)}
+                  sx={{ minHeight: 44 }}
+                >
+                  Estornar
+                </Button>
+              ) : undefined
+            }
+          />
+        )}
         renderRow={(row) => (
           <TableRow key={row.id} hover>
             <TableCell>{row.number}</TableCell>
@@ -95,7 +139,7 @@ export default function PaymentsTable({ filter, hideClient }: Props) {
             <TableCell align="right">
               {canReverse && row.kind === 'PAYMENT' && row.status === 'VALID' && (
                 <Tooltip title="Estornar">
-                  <IconButton color="error" onClick={() => setToReverse(row)}>
+                  <IconButton color="error" aria-label="Estornar" onClick={() => setToReverse(row)}>
                     <Iconify icon="solar:undo-left-round-bold-duotone" />
                   </IconButton>
                 </Tooltip>

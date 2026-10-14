@@ -35,7 +35,9 @@ import {
   VEHICLE_CATEGORY_LABELS,
 } from 'src/types/detailing';
 //
+import HeaderPrimaryAction from '../shared/HeaderPrimaryAction';
 import PagedTable from '../shared/PagedTable';
+import MobileCard from '../shared/MobileCard';
 import ServiceFormDialog from './ServiceFormDialog';
 
 // ----------------------------------------------------------------------
@@ -132,14 +134,11 @@ export default function ServiceListView() {
       },
       onClear: () => setTerm(''),
     },
-    actions: hasPermission([Authorities.CREATE_SERVICES]) ? (
-      <Button
-        variant="contained"
-        startIcon={<Iconify icon="eva:plus-fill" />}
+    primaryAction: hasPermission([Authorities.CREATE_SERVICES]) ? (
+      <HeaderPrimaryAction
+        label="Novo serviço"
         onClick={() => setForm({ open: true, service: null })}
-      >
-        Novo serviço
-      </Button>
+      />
     ) : null,
   });
 
@@ -162,6 +161,50 @@ export default function ServiceListView() {
             setSize(value);
             setPage(0);
           }}
+          mobileRenderRow={(row) => (
+            <MobileCard
+              key={row.id}
+              title={row.name}
+              subtitle={[row.code, PRICING_TYPE_LABELS[row.pricingType]]
+                .filter(Boolean)
+                .join(' · ')}
+              status={
+                <Label variant="soft" color={row.status === 'ACTIVE' ? 'success' : 'default'}>
+                  {row.status === 'ACTIVE' ? 'Activo' : 'Arquivado'}
+                </Label>
+              }
+              rows={VEHICLE_CATEGORIES.filter(
+                (category) => !row.category || row.category === category
+              ).map((category) => ({
+                label: VEHICLE_CATEGORY_LABELS[category],
+                value: priceCell(row, category),
+              }))}
+              actions={
+                canUpdate || canArchive ? (
+                  <>
+                    {canUpdate && (
+                      <Button
+                        startIcon={<Iconify icon="solar:pen-bold" />}
+                        onClick={() => setForm({ open: true, service: row })}
+                        sx={{ minHeight: 44 }}
+                      >
+                        Editar
+                      </Button>
+                    )}
+                    {canArchive && (
+                      <Button
+                        color="inherit"
+                        onClick={() => toggleArchive(row)}
+                        sx={{ minHeight: 44 }}
+                      >
+                        {row.status === 'ACTIVE' ? 'Arquivar' : 'Reactivar'}
+                      </Button>
+                    )}
+                  </>
+                ) : undefined
+              }
+            />
+          )}
           renderRow={(row) => (
             <TableRow key={row.id} hover>
               <TableCell>
@@ -184,14 +227,20 @@ export default function ServiceListView() {
               <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
                 {canUpdate && (
                   <Tooltip title="Editar">
-                    <IconButton onClick={() => setForm({ open: true, service: row })}>
+                    <IconButton
+                      aria-label="Editar"
+                      onClick={() => setForm({ open: true, service: row })}
+                    >
                       <Iconify icon="solar:pen-bold" />
                     </IconButton>
                   </Tooltip>
                 )}
                 {canArchive && (
                   <Tooltip title={row.status === 'ACTIVE' ? 'Arquivar' : 'Reactivar'}>
-                    <IconButton onClick={() => toggleArchive(row)}>
+                    <IconButton
+                      aria-label={row.status === 'ACTIVE' ? 'Arquivar' : 'Reactivar'}
+                      onClick={() => toggleArchive(row)}
+                    >
                       <Iconify
                         icon={
                           row.status === 'ACTIVE'

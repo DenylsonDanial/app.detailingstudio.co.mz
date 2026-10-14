@@ -15,7 +15,7 @@ interface Props extends Omit<UploadProps, 'file'> {
 
 // ----------------------------------------------------------------------
 
-//Custom Components
+// Custom Components
 
 export function RHFUploadAvatar({ name, fileName, ...other }: Props) {
   const { control } = useFormContext();
@@ -61,7 +61,6 @@ export function RHFUploadImage({ name, fileName, multiple, helperText, ...other 
             }
             fileName={fileName}
             {...other}
-            
           />
         ) : (
           <UploadImage
@@ -84,7 +83,7 @@ export function RHFUploadImage({ name, fileName, multiple, helperText, ...other 
   );
 }
 
-//End Custom Components
+// End Custom Components
 
 // ----------------------------------------------------------------------
 
@@ -126,7 +125,6 @@ export function RHFUpload({ name, multiple, helperText, ...other }: Props) {
               )
             }
             {...other}
-            
           />
         ) : (
           <Upload
@@ -147,4 +145,3 @@ export function RHFUpload({ name, multiple, helperText, ...other }: Props) {
     />
   );
 }
-

@@ -3,12 +3,12 @@ import MenuItem from '@mui/material/MenuItem';
 // utils
 // components
 import React, { useEffect, useState } from 'react';
-import { 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  SelectChangeEvent, 
-  Box, 
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  SelectChangeEvent,
+  Box,
   Typography,
   Chip,
   alpha,
@@ -22,20 +22,27 @@ import {
   ListSubheader,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { enqueueSnackbar } from 'notistack';
 import { IUser } from '../../types/user';
 import { ITenant } from '../../types/tenant';
-import { enqueueSnackbar } from 'notistack';
-import { getActiveTenant, getCurrentCompany, getRefreshToken, isValidToken, getAccessToken, refreshSession, setActiveTenant, setSession } from '../../auth/context/jwt/utils';
+import {
+  getActiveTenant,
+  getCurrentCompany,
+  getRefreshToken,
+  isValidToken,
+  getAccessToken,
+  refreshSession,
+  setActiveTenant,
+  setSession,
+} from '../../auth/context/jwt/utils';
 import axios, { endpoints, getApiErrorMessage } from '../../utils/axios';
 import Iconify from '../../components/iconify';
 
 // ----------------------------------------------------------------------
 
-
 type Props = {
   loggedUser: IUser | undefined;
-}
-
+};
 
 export default function CompanySwitch({ loggedUser }: Props) {
   const theme = useTheme();
@@ -88,7 +95,10 @@ export default function CompanySwitch({ loggedUser }: Props) {
   };
 
   useEffect(() => {
-    const hasLocations = loggedUser !== undefined && loggedUser.businessLocations !== undefined && loggedUser.businessLocations.length > 1;
+    const hasLocations =
+      loggedUser !== undefined &&
+      loggedUser.businessLocations !== undefined &&
+      loggedUser.businessLocations.length > 1;
     setHasManyLocations(hasLocations);
     const current = getCurrentCompany() || getActiveTenant();
     if (current && hasLocations) setCompany(current);
@@ -104,15 +114,16 @@ export default function CompanySwitch({ loggedUser }: Props) {
   // Filtrar empresas baseado na busca
   const filteredCompanies = React.useMemo(() => {
     if (!loggedUser?.businessLocations) return [];
-    
+
     if (!searchText.trim()) {
       return loggedUser.businessLocations;
     }
 
     const search = searchText.toLowerCase().trim();
-    return loggedUser.businessLocations.filter((company: ITenant) => 
-      company.tenantName?.toLowerCase().includes(search) ||
-      company.tenantId?.toLowerCase().includes(search)
+    return loggedUser.businessLocations.filter(
+      (item: ITenant) =>
+        item.tenantName?.toLowerCase().includes(search) ||
+        item.tenantId?.toLowerCase().includes(search)
     );
   }, [loggedUser?.businessLocations, searchText]);
 
@@ -126,7 +137,7 @@ export default function CompanySwitch({ loggedUser }: Props) {
   return (
     <>
       {hasManyLocations && (
-        <FormControl 
+        <FormControl
           sx={{
             minWidth: 240,
             '& .MuiOutlinedInput-root': {
@@ -145,7 +156,7 @@ export default function CompanySwitch({ loggedUser }: Props) {
             },
           }}
         >
-          <InputLabel 
+          <InputLabel
             id="company-select-label"
             sx={{
               fontWeight: 600,
@@ -255,9 +266,9 @@ export default function CompanySwitch({ loggedUser }: Props) {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Iconify 
-                          icon="eva:search-fill" 
-                          width={20} 
+                        <Iconify
+                          icon="eva:search-fill"
+                          width={20}
                           sx={{ color: theme.palette.text.secondary }}
                         />
                       </InputAdornment>
@@ -283,9 +294,9 @@ export default function CompanySwitch({ loggedUser }: Props) {
                             },
                           }}
                         >
-                          <Iconify 
-                            icon="eva:close-fill" 
-                            width={16} 
+                          <Iconify
+                            icon="eva:close-fill"
+                            width={16}
                             sx={{ color: theme.palette.text.secondary }}
                           />
                         </Box>
@@ -301,9 +312,9 @@ export default function CompanySwitch({ loggedUser }: Props) {
                     },
                   }}
                 />
-                <Stack 
-                  direction="row" 
-                  alignItems="center" 
+                <Stack
+                  direction="row"
+                  alignItems="center"
                   justifyContent="space-between"
                   sx={{ mt: 1.5, px: 0.5 }}
                 >
@@ -311,8 +322,10 @@ export default function CompanySwitch({ loggedUser }: Props) {
                     {filteredCompanies.length} de {totalCompanies} empresas
                   </Typography>
                   {searchText && (
-                    <Chip 
-                      label={`${filteredCompanies.length} resultado${filteredCompanies.length !== 1 ? 's' : ''}`}
+                    <Chip
+                      label={`${filteredCompanies.length} resultado${
+                        filteredCompanies.length !== 1 ? 's' : ''
+                      }`}
                       size="small"
                       sx={{
                         height: 20,
@@ -346,28 +359,35 @@ export default function CompanySwitch({ loggedUser }: Props) {
                     Empresa Ativa
                   </ListSubheader>
                 )}
-                <MenuItem 
+                <MenuItem
                   value={activeCompany.tenantId}
                   sx={{
-                    background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.12)} 0%, ${alpha(theme.palette.primary.dark, 0.08)} 100%)`,
+                    background: `linear-gradient(135deg, ${alpha(
+                      theme.palette.primary.main,
+                      0.12
+                    )} 0%, ${alpha(theme.palette.primary.dark, 0.08)} 100%)`,
                     borderLeft: `3px solid ${theme.palette.primary.main}`,
                     '&:hover': {
-                      background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.16)} 0%, ${alpha(theme.palette.primary.dark, 0.12)} 100%)`,
+                      background: `linear-gradient(135deg, ${alpha(
+                        theme.palette.primary.main,
+                        0.16
+                      )} 0%, ${alpha(theme.palette.primary.dark, 0.12)} 100%)`,
                     },
                     '&.Mui-selected': {
-                      background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.12)} 0%, ${alpha(theme.palette.primary.dark, 0.08)} 100%)`,
+                      background: `linear-gradient(135deg, ${alpha(
+                        theme.palette.primary.main,
+                        0.12
+                      )} 0%, ${alpha(theme.palette.primary.dark, 0.08)} 100%)`,
                       '&:hover': {
-                        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.16)} 0%, ${alpha(theme.palette.primary.dark, 0.12)} 100%)`,
+                        background: `linear-gradient(135deg, ${alpha(
+                          theme.palette.primary.main,
+                          0.16
+                        )} 0%, ${alpha(theme.palette.primary.dark, 0.12)} 100%)`,
                       },
                     },
                   }}
                 >
-                  <Stack 
-                    direction="row" 
-                    alignItems="center" 
-                    spacing={1.5} 
-                    sx={{ width: '100%' }}
-                  >
+                  <Stack direction="row" alignItems="center" spacing={1.5} sx={{ width: '100%' }}>
                     <Avatar
                       sx={{
                         width: 36,
@@ -382,9 +402,9 @@ export default function CompanySwitch({ loggedUser }: Props) {
                       {getCompanyInitials(activeCompany.tenantName)}
                     </Avatar>
                     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
+                      <Typography
+                        variant="body2"
+                        sx={{
                           fontWeight: 700,
                           color: theme.palette.primary.main,
                           mb: 0.25,
@@ -395,9 +415,9 @@ export default function CompanySwitch({ loggedUser }: Props) {
                       >
                         {activeCompany.tenantName}
                       </Typography>
-                      <Typography 
-                        variant="caption" 
-                        sx={{ 
+                      <Typography
+                        variant="caption"
+                        sx={{
                           color: theme.palette.text.secondary,
                           fontSize: '0.688rem',
                         }}
@@ -425,7 +445,7 @@ export default function CompanySwitch({ loggedUser }: Props) {
                     </Fade>
                   </Stack>
                 </MenuItem>
-                
+
                 {otherCompanies.length > 0 && (
                   <>
                     <Divider sx={{ my: 1, mx: 2 }} />
@@ -451,10 +471,10 @@ export default function CompanySwitch({ loggedUser }: Props) {
             )}
 
             {/* Outras Empresas */}
-            {otherCompanies.length > 0 ? (
-              otherCompanies.map((n : ITenant) => (
-                <MenuItem 
-                  key={n.id} 
+            {otherCompanies.length > 0 &&
+              otherCompanies.map((n: ITenant) => (
+                <MenuItem
+                  key={n.id}
                   value={n.tenantId}
                   sx={{
                     '&:hover': {
@@ -463,28 +483,26 @@ export default function CompanySwitch({ loggedUser }: Props) {
                     },
                   }}
                 >
-                  <Stack 
-                    direction="row" 
-                    alignItems="center" 
-                    spacing={1.5} 
-                    sx={{ width: '100%' }}
-                  >
+                  <Stack direction="row" alignItems="center" spacing={1.5} sx={{ width: '100%' }}>
                     <Avatar
                       sx={{
                         width: 36,
                         height: 36,
                         fontSize: '0.813rem',
                         fontWeight: 700,
-                        background: `linear-gradient(135deg, ${alpha(theme.palette.grey[500], 0.12)} 0%, ${alpha(theme.palette.grey[600], 0.08)} 100%)`,
+                        background: `linear-gradient(135deg, ${alpha(
+                          theme.palette.grey[500],
+                          0.12
+                        )} 0%, ${alpha(theme.palette.grey[600], 0.08)} 100%)`,
                         color: theme.palette.text.secondary,
                       }}
                     >
                       {getCompanyInitials(n.tenantName)}
                     </Avatar>
                     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
+                      <Typography
+                        variant="body2"
+                        sx={{
                           fontWeight: 500,
                           color: theme.palette.text.primary,
                           mb: 0.25,
@@ -495,9 +513,9 @@ export default function CompanySwitch({ loggedUser }: Props) {
                       >
                         {n.tenantName}
                       </Typography>
-                      <Typography 
-                        variant="caption" 
-                        sx={{ 
+                      <Typography
+                        variant="caption"
+                        sx={{
                           color: theme.palette.text.secondary,
                           fontSize: '0.688rem',
                         }}
@@ -507,8 +525,8 @@ export default function CompanySwitch({ loggedUser }: Props) {
                     </Box>
                   </Stack>
                 </MenuItem>
-              ))
-            ) : searchText ? (
+              ))}
+            {otherCompanies.length === 0 && !!searchText && (
               <Box
                 sx={{
                   py: 6,
@@ -516,10 +534,10 @@ export default function CompanySwitch({ loggedUser }: Props) {
                   textAlign: 'center',
                 }}
               >
-                <Iconify 
-                  icon="eva:search-outline" 
-                  width={48} 
-                  sx={{ 
+                <Iconify
+                  icon="eva:search-outline"
+                  width={48}
+                  sx={{
                     color: theme.palette.text.disabled,
                     mb: 2,
                   }}
@@ -531,7 +549,7 @@ export default function CompanySwitch({ loggedUser }: Props) {
                   Tente outro termo de busca
                 </Typography>
               </Box>
-            ) : null}
+            )}
           </Select>
         </FormControl>
       )}

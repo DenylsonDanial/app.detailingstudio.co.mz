@@ -38,13 +38,8 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
     const useDarkVariant =
       appearance === 'onDark' || (appearance === 'auto' && theme.palette.mode === 'dark');
 
-    const src = compact
-      ? useDarkVariant
-        ? LOGO.icon.dark
-        : LOGO.icon.light
-      : useDarkVariant
-        ? LOGO.full.dark
-        : LOGO.full.light;
+    const variants = compact ? LOGO.icon : LOGO.full;
+    const src = useDarkVariant ? variants.dark : variants.light;
 
     const logo = (
       <Box

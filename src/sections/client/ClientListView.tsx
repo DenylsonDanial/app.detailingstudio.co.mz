@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useSessionState } from 'src/hooks/use-session-state';
 // @mui
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardContent from '@mui/material/CardContent';
 import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 // routes
 import { paths } from 'src/routes/paths';
@@ -27,6 +34,7 @@ import { useGetClientsQuery } from 'src/redux/services/clientService';
 // types
 import { CLIENT_TYPE_LABELS, IClient, RecordStatus } from 'src/types/detailing';
 //
+import HeaderPrimaryAction from '../shared/HeaderPrimaryAction';
 import PagedTable from '../shared/PagedTable';
 import ClientFormDialog from './ClientFormDialog';
 
@@ -41,14 +49,92 @@ const COLUMNS = [
   { id: 'status', label: 'Estado' },
 ];
 
+function ClientMobileCard({ client, onOpen }: { client: IClient; onOpen: VoidFunction }) {
+  const vehicles = client.vehicles.map((vehicle) => vehicle.plate).join(', ') || '—';
+
+  return (
+    <Card>
+      <CardActionArea onClick={onOpen} aria-label={`Abrir cliente ${client.name}`}>
+        <CardContent sx={{ p: 2 }}>
+          <Stack direction="row" alignItems="flex-start" spacing={1.5}>
+            <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+              <Typography variant="subtitle1" noWrap>
+                {client.name}
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                {CLIENT_TYPE_LABELS[client.clientType]}
+              </Typography>
+            </Box>
+            <Label variant="soft" color={client.status === 'ACTIVE' ? 'success' : 'default'}>
+              {client.status === 'ACTIVE' ? 'Activo' : 'Arquivado'}
+            </Label>
+            <Iconify icon="eva:chevron-right-fill" sx={{ mt: 0.5, flexShrink: 0 }} />
+          </Stack>
+
+          <Divider sx={{ my: 1.5 }} />
+
+          <Stack spacing={1.25}>
+            <Stack direction="row" justifyContent="space-between" spacing={2}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', flexShrink: 0 }}>
+                Contacto
+              </Typography>
+              <Typography variant="body2" noWrap sx={{ minWidth: 0, textAlign: 'right' }}>
+                {client.phone ?? '—'}
+              </Typography>
+            </Stack>
+
+            <Stack direction="row" justifyContent="space-between" spacing={2}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', flexShrink: 0 }}>
+                Viaturas
+              </Typography>
+              <Typography
+                variant="body2"
+                noWrap
+                title={vehicles}
+                sx={{ minWidth: 0, maxWidth: '70%', textAlign: 'right' }}
+              >
+                {vehicles}
+              </Typography>
+            </Stack>
+
+            <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                Conta corrente
+              </Typography>
+              <Label variant="soft" color={client.creditAllowed ? 'info' : 'default'}>
+                {client.creditAllowed ? 'Autorizada' : 'Não'}
+              </Label>
+            </Stack>
+
+            <Stack direction="row" justifyContent="space-between" spacing={2}>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                Dívida actual
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  whiteSpace: 'nowrap',
+                  color: (client.currentDebt ?? 0) > 0 ? 'error.main' : 'text.primary',
+                }}
+              >
+                {formatMzn(client.currentDebt)}
+              </Typography>
+            </Stack>
+          </Stack>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+}
+
 export default function ClientListView() {
   const settings = useSettingsContext();
   const router = useRouter();
 
-  const [term, setTerm] = useState('');
-  const [status, setStatus] = useState<RecordStatus | ''>('ACTIVE');
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(25);
+  const [term, setTerm] = useSessionState('clients.term', '');
+  const [status, setStatus] = useSessionState<RecordStatus | ''>('clients.status', 'ACTIVE');
+  const [page, setPage] = useSessionState('clients.page', 0);
+  const [size, setSize] = useSessionState('clients.size', 25);
   const [createOpen, setCreateOpen] = useState(false);
 
   const debouncedTerm = useDebounce(term, 300);
@@ -91,14 +177,8 @@ export default function ClientListView() {
       },
       onClear: () => setTerm(''),
     },
-    actions: hasPermission([Authorities.CREATE_CLIENTS]) ? (
-      <Button
-        variant="contained"
-        startIcon={<Iconify icon="eva:plus-fill" />}
-        onClick={() => setCreateOpen(true)}
-      >
-        Novo cliente
-      </Button>
+    primaryAction: hasPermission([Authorities.CREATE_CLIENTS]) ? (
+      <HeaderPrimaryAction label="Novo cliente" onClick={() => setCreateOpen(true)} />
     ) : null,
   });
 
@@ -108,7 +188,7 @@ export default function ClientListView() {
         <title>Clientes</title>
       </Helmet>
 
-      <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+      <Container maxWidth={settings.themeStretch ? false : 'xl'} sx={{ px: { xs: 2 } }}>
         <PagedTable<IClient>
           columns={COLUMNS}
           rows={currentData?.content ?? []}
@@ -121,6 +201,13 @@ export default function ClientListView() {
             setSize(value);
             setPage(0);
           }}
+          mobileRenderRow={(row) => (
+            <ClientMobileCard
+              key={row.id}
+              client={row}
+              onOpen={() => router.push(paths.dashboard.client.detail(row.id))}
+            />
+          )}
           renderRow={(row) => (
             <TableRow
               key={row.id}

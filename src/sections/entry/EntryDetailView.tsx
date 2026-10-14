@@ -49,6 +49,7 @@ import {
   WorkStatus,
 } from 'src/types/detailing';
 //
+import HeaderPrimaryAction from '../shared/HeaderPrimaryAction';
 import PaymentFormDialog from '../payment/PaymentFormDialog';
 import HistoryList from '../shared/HistoryList';
 import ReasonDialog from '../shared/ReasonDialog';
@@ -80,15 +81,14 @@ export default function EntryDetailView() {
 
   usePageHeader({
     title: entry ? `Entrada ${entry.number}` : 'Entrada',
-    actions: (
-      <Button
+    primaryAction: (
+      <HeaderPrimaryAction
+        label="Entradas"
+        icon="eva:arrow-back-fill"
         variant="soft"
         color="secondary"
-        startIcon={<Iconify icon="eva:arrow-back-fill" />}
         onClick={() => router.push(paths.dashboard.entry.list)}
-      >
-        Entradas
-      </Button>
+      />
     ),
   });
 

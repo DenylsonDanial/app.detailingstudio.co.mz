@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -187,7 +188,14 @@ export default function EntryForm({ entry, initialClient }: Props) {
 
   const handleSubmit = async () => {
     setSubmitted(true);
-    if (!client || !vehicleId || lines.some((line) => lineErrors(line))) return;
+    if (!client || !vehicleId || lines.some((line) => lineErrors(line))) {
+      window.requestAnimationFrame(() => {
+        document
+          .querySelector('[aria-invalid="true"], [data-field-error]')
+          ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      return;
+    }
 
     const data = {
       clientId: client.id,
@@ -227,25 +235,42 @@ export default function EntryForm({ entry, initialClient }: Props) {
               spacing={2}
               alignItems={{ md: 'flex-start' }}
             >
-              <Stack direction="row" spacing={1} sx={{ flex: 1 }} alignItems="flex-start">
-                <ClientAutocomplete
-                  value={client}
-                  onChange={setClient}
-                  disabled={!!entry}
-                  error={submitted && !client}
-                  helperText={submitted && !client ? 'Seleccione o cliente' : undefined}
-                />
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={1}
+                sx={{ flex: 1, minWidth: 0 }}
+                alignItems={{ xs: 'stretch', sm: 'flex-start' }}
+              >
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <ClientAutocomplete
+                    value={client}
+                    onChange={setClient}
+                    disabled={!!entry}
+                    error={submitted && !client}
+                    helperText={submitted && !client ? 'Seleccione o cliente' : undefined}
+                  />
+                </Box>
                 {!entry && hasPermission([Authorities.CREATE_CLIENTS]) && (
                   <Button
-                    sx={{ flexShrink: 0, mt: 1 }}
+                    sx={{
+                      flexShrink: 0,
+                      mt: { sm: 1 },
+                      minHeight: 44,
+                      alignSelf: { xs: 'flex-start', sm: 'auto' },
+                    }}
                     startIcon={<Iconify icon="eva:plus-fill" />}
                     onClick={() => setClientDialog(true)}
                   >
-                    Novo
+                    Novo cliente
                   </Button>
                 )}
               </Stack>
-              <Stack direction="row" spacing={1} sx={{ flex: 1 }} alignItems="flex-start">
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={1}
+                sx={{ flex: 1, minWidth: 0 }}
+                alignItems={{ xs: 'stretch', sm: 'flex-start' }}
+              >
                 <TextField
                   select
                   fullWidth
@@ -286,11 +311,16 @@ export default function EntryForm({ entry, initialClient }: Props) {
                 </TextField>
                 {client && hasPermission([Authorities.CREATE_VEHICLES]) && (
                   <Button
-                    sx={{ flexShrink: 0, mt: 1 }}
+                    sx={{
+                      flexShrink: 0,
+                      mt: { sm: 1 },
+                      minHeight: 44,
+                      alignSelf: { xs: 'flex-start', sm: 'auto' },
+                    }}
                     startIcon={<Iconify icon="eva:plus-fill" />}
                     onClick={() => setVehicleDialog(true)}
                   >
-                    Nova
+                    Nova viatura
                   </Button>
                 )}
               </Stack>
@@ -310,7 +340,7 @@ export default function EntryForm({ entry, initialClient }: Props) {
                     ? undefined
                     : 'Datas anteriores a hoje estão reservadas ao gestor'
                 }
-                sx={{ minWidth: 240 }}
+                sx={{ minWidth: { md: 240 } }}
               />
               <TextField
                 fullWidth
@@ -326,13 +356,23 @@ export default function EntryForm({ entry, initialClient }: Props) {
       <Card>
         <CardContent>
           <Stack spacing={2}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              flexWrap="wrap"
+              useFlexGap
+              spacing={1}
+            >
               <Typography variant="subtitle1">
                 Serviços {category ? `· ${VEHICLE_CATEGORY_LABELS[category]}` : ''}
               </Typography>
               <Button
+                size="small"
+                variant="soft"
                 startIcon={<Iconify icon="eva:plus-fill" />}
                 onClick={() => setLines((prev) => [...prev, emptyLine()])}
+                sx={{ minHeight: 44 }}
               >
                 Adicionar serviço
               </Button>
@@ -389,37 +429,50 @@ export default function EntryForm({ entry, initialClient }: Props) {
                         ))}
                       </TextField>
                     )}
-                    <TextField
-                      label={pricing === 'HOURLY' ? 'Horas' : 'Quantidade'}
-                      value={line.quantity}
-                      onChange={(event) => updateLine(line.key, { quantity: event.target.value })}
-                      inputProps={{ inputMode: 'decimal' }}
-                      sx={{ width: { md: 120 } }}
-                    />
-                    <TextField
-                      label={pricing === 'HOURLY' ? 'Preço por hora' : 'Preço unitário'}
-                      value={line.unitPrice === '' ? reference ?? '' : line.unitPrice}
-                      placeholder={pricing === 'VARIABLE' ? 'Introduza o preço' : undefined}
-                      disabled={!priceEditable}
-                      onChange={(event) => updateLine(line.key, { unitPrice: event.target.value })}
-                      inputProps={{ inputMode: 'decimal' }}
-                      sx={{ width: { md: 170 } }}
-                    />
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ minWidth: 130, textAlign: { md: 'right' } }}
+                    <Stack direction="row" spacing={1.5} sx={{ width: { xs: 1, md: 'auto' } }}>
+                      <TextField
+                        label={pricing === 'HOURLY' ? 'Horas' : 'Quantidade'}
+                        value={line.quantity}
+                        onChange={(event) => updateLine(line.key, { quantity: event.target.value })}
+                        inputProps={{ inputMode: 'decimal' }}
+                        sx={{ flex: { xs: 1, md: 'none' }, width: { md: 120 } }}
+                      />
+                      <TextField
+                        label={pricing === 'HOURLY' ? 'Preço por hora' : 'Preço unitário'}
+                        value={line.unitPrice === '' ? reference ?? '' : line.unitPrice}
+                        placeholder={pricing === 'VARIABLE' ? 'Introduza o preço' : undefined}
+                        disabled={!priceEditable}
+                        onChange={(event) =>
+                          updateLine(line.key, { unitPrice: event.target.value })
+                        }
+                        inputProps={{ inputMode: 'decimal' }}
+                        sx={{ flex: { xs: 1.4, md: 'none' }, width: { md: 170 } }}
+                      />
+                    </Stack>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      sx={{ width: { xs: 1, md: 'auto' } }}
                     >
-                      {formatMzn(lineSubtotal(line))}
-                    </Typography>
-                    <IconButton
-                      color="error"
-                      disabled={lines.length === 1}
-                      onClick={() =>
-                        setLines((prev) => prev.filter((item) => item.key !== line.key))
-                      }
-                    >
-                      <Iconify icon="solar:trash-bin-trash-bold" />
-                    </IconButton>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ minWidth: 130, textAlign: { md: 'right' } }}
+                      >
+                        {formatMzn(lineSubtotal(line))}
+                      </Typography>
+                      <IconButton
+                        color="error"
+                        aria-label={`Remover ${line.serviceName ?? 'serviço'}`}
+                        sx={{ width: 44, height: 44 }}
+                        disabled={lines.length === 1}
+                        onClick={() =>
+                          setLines((prev) => prev.filter((item) => item.key !== line.key))
+                        }
+                      >
+                        <Iconify icon="solar:trash-bin-trash-bold" />
+                      </IconButton>
+                    </Stack>
                   </Stack>
                   {adjusted && (
                     <TextField
@@ -432,7 +485,12 @@ export default function EntryForm({ entry, initialClient }: Props) {
                     />
                   )}
                   {error && (
-                    <Typography variant="caption" sx={{ color: 'error.main' }}>
+                    <Typography
+                      variant="caption"
+                      role="alert"
+                      data-field-error
+                      sx={{ color: 'error.main' }}
+                    >
                       {error}
                     </Typography>
                   )}
@@ -448,7 +506,23 @@ export default function EntryForm({ entry, initialClient }: Props) {
         </CardContent>
       </Card>
 
-      <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
+      <Stack
+        direction="row"
+        justifyContent="flex-end"
+        spacing={1.5}
+        sx={{
+          position: { xs: 'sticky', sm: 'static' },
+          bottom: 0,
+          zIndex: (theme) => theme.zIndex.appBar - 1,
+          mx: { xs: -2, sm: 0 },
+          px: { xs: 2, sm: 0 },
+          pt: { xs: 1.5, sm: 0 },
+          pb: { xs: 'calc(12px + env(safe-area-inset-bottom))', sm: 0 },
+          bgcolor: { xs: 'background.default', sm: 'transparent' },
+          borderTop: (theme) => ({ xs: `solid 1px ${theme.palette.divider}`, sm: 'none' }),
+          '& > .MuiButton-root': { flex: { xs: 1, sm: 'none' }, minHeight: 48 },
+        }}
+      >
         <Button variant="outlined" color="inherit" onClick={() => router.back()}>
           Cancelar
         </Button>

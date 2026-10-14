@@ -15,7 +15,7 @@ export function fCurrency(number: InputValue) {
 
   const num = typeof number === 'string' ? parseFloat(number) : number;
 
-  if (isNaN(num)) {
+  if (Number.isNaN(num)) {
     return '';
   }
 
@@ -61,7 +61,7 @@ const formatedValue = (number: InputValue) => {
     num = number || 0;
   }
   return num;
-}
+};
 
 export function fCurrencyDashboardReceitas(number: InputValue) {
   const formated = fCurrency(number);
@@ -84,7 +84,7 @@ export function fCurrencyMZN(number: InputValue) {
 
   const num = typeof number === 'string' ? parseFloat(number) : number;
 
-  if (isNaN(num)) {
+  if (Number.isNaN(num)) {
     return '';
   }
 
@@ -95,9 +95,6 @@ export function fCurrencyMZN(number: InputValue) {
 
   return formatter.format(num);
 }
-
-
-
 
 export function fPercent(number: InputValue) {
   const format = number ? numeral(Number(number) / 100).format('0.0%') : '';

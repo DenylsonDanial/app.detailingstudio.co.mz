@@ -17,23 +17,17 @@ export function getApiErrorMessage(error: unknown, fallback: string): string {
     return error;
   }
   if (error && typeof error === 'object') {
+    const pick = (source: Record<string, unknown>) =>
+      (['message', 'detail', 'description'] as const)
+        .map((key) => source[key])
+        .find((value): value is string => typeof value === 'string' && !!value.trim());
+
     const body = error as Record<string, unknown>;
-    const nested = body.data;
-    if (nested && typeof nested === 'object') {
-      const nestedBody = nested as Record<string, unknown>;
-      for (const key of ['message', 'detail', 'description'] as const) {
-        const value = nestedBody[key];
-        if (typeof value === 'string' && value.trim()) {
-          return value;
-        }
-      }
-    }
-    for (const key of ['message', 'detail', 'description'] as const) {
-      const value = body[key];
-      if (typeof value === 'string' && value.trim()) {
-        return value;
-      }
-    }
+    const nested =
+      body.data && typeof body.data === 'object'
+        ? pick(body.data as Record<string, unknown>)
+        : undefined;
+    return nested ?? pick(body) ?? fallback;
   }
   return fallback;
 }

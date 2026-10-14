@@ -8,7 +8,7 @@ import Stack, { StackProps } from '@mui/material/Stack';
 interface Props extends StackProps {
   dense?: boolean;
   action?: React.ReactNode;
-  rowCount?: number; //Fixed Build issue...
+  rowCount?: number; // Fixed Build issue...
   numSelected: number;
   onSelectAllRows: (checked: boolean) => void;
 }
@@ -16,7 +16,7 @@ interface Props extends StackProps {
 export default function TableSelectedAction({
   dense,
   action,
-  rowCount=0,
+  rowCount = 0,
   numSelected,
   onSelectAllRows,
   sx,

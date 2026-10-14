@@ -62,7 +62,7 @@ export default function NavItem({
           primaryTypographyProps={{
             noWrap: true,
             typography: 'body2',
-            textTransform: 'capitalize',
+            textTransform: 'none',
             fontWeight: active ? 'fontWeightSemiBold' : 'fontWeightMedium',
           }}
           secondaryTypographyProps={{
@@ -93,7 +93,6 @@ export default function NavItem({
   if (item?.roles?.length && !hasPermission(item.roles)) {
     return null;
   }
-
 
   // External link
   if (externalLink)

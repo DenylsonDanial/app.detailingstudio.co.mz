@@ -16,8 +16,8 @@ export const FinishSetup: React.FC = () => (
   >
     <Iconify width={200} icon="mdi:shield-alert-outline" />
     <Typography sx={{ mt: 2, mb: 1 }} align="center">
-      Confirme o nome da empresa e o administrador antes de submeter. O restante
-      perfil (NUIT, contactos, morada e logótipo) completa-se depois em Definições.
+      Confirme o nome da empresa e o administrador antes de submeter. O restante perfil (NUIT,
+      contactos, morada e logótipo) completa-se depois em Definições.
     </Typography>
   </Stack>
 );

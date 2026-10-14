@@ -44,19 +44,17 @@ import { Roles } from '../../utils/authorities';
 // ----------------------------------------------------------------------
 
 type Props = {
-  currentUser?: IUserCreate,
+  currentUser?: IUserCreate;
   isEdit?: boolean;
 };
 
 const initialStateRole: IRolePage = initialRolePageData;
 
 export default function UserNewEditForm({ isEdit, currentUser }: Props) {
-
   const { currentData: rolesList } = useGetRolesQuery(initialStateRole);
-  const [initialState] = useState<ITenantPage>({size: 1000, page: 0});
+  const [initialState] = useState<ITenantPage>({ size: 1000, page: 0 });
 
-  const { currentData : tenantsList } = useGetCompaniesQuery(initialState)
-
+  const { currentData: tenantsList } = useGetCompaniesQuery(initialState);
 
   const [saveUser] = useSaveUserMutation();
   const [updateUser] = useUpdateUserMutation();
@@ -66,16 +64,15 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-
   useEffect(() => {
     const rList: string[] = [];
-    currentUser?.rolesIds?.forEach(item => {
+    currentUser?.rolesIds?.forEach((item) => {
       rList.push(item.toString());
     });
     setRoles(rList);
 
     const tList: string[] = [];
-    currentUser?.locationsIds?.forEach(item => {
+    currentUser?.locationsIds?.forEach((item) => {
       tList.push(item.toString());
     });
     setTenants(tList);
@@ -89,9 +86,7 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
     status: Yup.string(),
     roles: Yup.string(),
     isVerified: Yup.boolean(),
-    password: isEdit
-      ? Yup.string()
-      : Yup.string().required('A palavra-passe é obrigatória'),
+    password: isEdit ? Yup.string() : Yup.string().required('A palavra-passe é obrigatória'),
     passwordConfirm: Yup.string().when('password', {
       is: (value: string) => !!value,
       then: (schema) =>
@@ -114,7 +109,7 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
       password: '',
       passwordConfirm: '',
     }),
-    [currentUser],
+    [currentUser]
   );
 
   const methods = useForm({
@@ -174,17 +169,18 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
         enqueueSnackbar('Actualizado com sucesso!');
         navigate(paths.dashboard.user.list);
       }
-
     } catch (error) {
       if (error?.data.length > 0) {
         error.data.forEach((item: string) => enqueueSnackbar(item, { variant: 'error' }));
       } else if (error?.status === 400) {
-        enqueueSnackbar(error?.data?.message || 'Verifique os dados introduzidos.', { variant: 'error' });
+        enqueueSnackbar(error?.data?.message || 'Verifique os dados introduzidos.', {
+          variant: 'error',
+        });
       } else {
-        enqueueSnackbar(error.status === 500 ?
-            'Ocorreu um erro inesperado' :
-            'Verifique os dados introduzidos.',
-          { variant: 'error' });
+        enqueueSnackbar(
+          error.status === 500 ? 'Ocorreu um erro inesperado' : 'Verifique os dados introduzidos.',
+          { variant: 'error' }
+        );
       }
     }
   });
@@ -199,7 +195,6 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
     },
   };
 
-
   function getStyles(name: string, selectedRoles: readonly string[], currentTheme: Theme) {
     return {
       fontWeight:
@@ -209,7 +204,11 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
     };
   }
 
-  function getTenantStyles(name: string | undefined, selectedTenants: readonly string[], currentTheme: Theme) {
+  function getTenantStyles(
+    name: string | undefined,
+    selectedTenants: readonly string[],
+    currentTheme: Theme
+  ) {
     if (name === undefined || selectedTenants === undefined) {
       return {};
     }
@@ -236,7 +235,9 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
     const selecteds = typeof value === 'string' ? value.split(',') : value;
     selecteds.forEach((item: string) => listString.push(item.toString()));
 
-    const finalList = listString.filter((item, _, array) => array.indexOf(item) === array.lastIndexOf(item));
+    const finalList = listString.filter(
+      (item, _, array) => array.indexOf(item) === array.lastIndexOf(item)
+    );
 
     setRoles(finalList);
     setRolesError(finalList.length < 1);
@@ -251,15 +252,15 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
     const selecteds = typeof value === 'string' ? value.split(',') : value;
     selecteds.forEach((item: string) => listString.push(item.toString()));
 
-    const finalList = listString.filter((item, _, array) => array.indexOf(item) === array.lastIndexOf(item));
+    const finalList = listString.filter(
+      (item, _, array) => array.indexOf(item) === array.lastIndexOf(item)
+    );
 
     setTenants(finalList);
     setTenantsError(finalList.length < 1);
   };
 
-  const passwordHelperText = isEdit
-    ? 'Opcional — deixe em branco para manter a actual'
-    : undefined;
+  const passwordHelperText = isEdit ? 'Opcional — deixe em branco para manter a actual' : undefined;
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -296,7 +297,7 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selected.map((item: string, i: number) => {
                         const foundTenant = tenantsList?.content?.find((obj) => obj.id === +item);
-                        return (<Chip key={i} label={foundTenant?.tenantName} />);
+                        return <Chip key={i} label={foundTenant?.tenantName} />;
                       })}
                     </Box>
                   )}
@@ -312,9 +313,7 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
                     </MenuItem>
                   ))}
                 </Select>
-                {tenantsError && (
-                  <FormHelperText>Seleccione pelo menos uma empresa</FormHelperText>
-                )}
+                {tenantsError && <FormHelperText>Seleccione pelo menos uma empresa</FormHelperText>}
               </FormControl>
 
               <FormControl fullWidth required error={rolesError}>
@@ -330,25 +329,25 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selected.map((item: string, i: number) => {
                         const foundRole = rolesList?.content?.find((obj) => obj.id === +item);
-                        return (<Chip key={i} label={foundRole?.displayName} />);
+                        return <Chip key={i} label={foundRole?.displayName} />;
                       })}
                     </Box>
                   )}
                   MenuProps={MenuProps}
                 >
-                  {rolesList?.content?.filter(item => item.name !== Roles.SA).map((item: IRole) => (
-                    <MenuItem
-                      key={item.id}
-                      value={String(item.id)}
-                      style={getStyles(item.displayName, roles, theme)}
-                    >
-                      {item.displayName}
-                    </MenuItem>
-                  ))}
+                  {rolesList?.content
+                    ?.filter((item) => item.name !== Roles.SA)
+                    .map((item: IRole) => (
+                      <MenuItem
+                        key={item.id}
+                        value={String(item.id)}
+                        style={getStyles(item.displayName, roles, theme)}
+                      >
+                        {item.displayName}
+                      </MenuItem>
+                    ))}
                 </Select>
-                {rolesError && (
-                  <FormHelperText>Seleccione pelo menos 1 cargo</FormHelperText>
-                )}
+                {rolesError && <FormHelperText>Seleccione pelo menos 1 cargo</FormHelperText>}
               </FormControl>
             </Box>
           </Card>
@@ -378,7 +377,9 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton onClick={password.onToggle} edge="end">
-                        <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                        <Iconify
+                          icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                        />
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -395,7 +396,9 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton onClick={password.onToggle} edge="end">
-                        <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                        <Iconify
+                          icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                        />
                       </IconButton>
                     </InputAdornment>
                   ),

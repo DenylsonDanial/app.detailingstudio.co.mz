@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 // @mui
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -20,6 +21,7 @@ import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
+import { useResponsive } from 'src/hooks/use-responsive';
 import { usePageHeader } from 'src/layouts/dashboard/page-header-context';
 // auth
 import { hasPermission } from 'src/auth/context/jwt/utils';
@@ -57,18 +59,39 @@ function Indicator({
         boxShadow: 'none',
       }}
     >
-      <CardContent>
-        <Stack direction="row" alignItems="center" spacing={2}>
-          <Iconify icon={icon} width={40} sx={{ color: 'common.white', flexShrink: 0 }} />
-          <Stack>
-            <Typography variant="h5" sx={{ color: 'common.white' }}>
+      <CardContent sx={{ p: { xs: 1.75, sm: 3 }, '&:last-child': { pb: { xs: 1.75, sm: 3 } } }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          spacing={{ xs: 1, sm: 2 }}
+        >
+          <Iconify
+            icon={icon}
+            sx={{
+              width: { xs: 28, sm: 40 },
+              height: { xs: 28, sm: 40 },
+              color: 'common.white',
+              flexShrink: 0,
+            }}
+          />
+          <Stack sx={{ minWidth: 0 }}>
+            <Typography
+              sx={{
+                color: 'common.white',
+                typography: { xs: 'subtitle1', sm: 'h5' },
+                wordBreak: 'break-word',
+              }}
+            >
               {value}
             </Typography>
-            <Typography variant="body2" sx={{ color: 'grey.400' }}>
+            <Typography variant="body2" sx={{ color: 'grey.300' }}>
               {label}
             </Typography>
             {caption && (
-              <Typography variant="caption" sx={{ color: 'grey.500' }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'grey.400', display: { xs: 'none', sm: 'block' } }}
+              >
                 {caption}
               </Typography>
             )}
@@ -122,6 +145,8 @@ export default function OverviewView() {
   const [endDate, setEndDate] = useState(todayMaputo());
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [expenseOpen, setExpenseOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+  const smUp = useResponsive('up', 'sm');
 
   const { currentData: summary } = useGetSummaryQuery(
     { startDate, endDate },
@@ -130,46 +155,90 @@ export default function OverviewView() {
 
   usePageHeader({
     title: 'Resumo',
-    actions:
+    secondaryActions:
       canSeeSummary && hasPermission([Authorities.EXPORT_DASHBOARD]) ? (
         <ExportButton context="summary" fileName="resumo" params={{ startDate, endDate }} />
       ) : null,
   });
 
+  const quickActionList = [
+    hasPermission([Authorities.CREATE_ENTRIES]) && {
+      key: 'entry',
+      label: 'Nova entrada',
+      short: 'Entrada',
+      icon: 'solar:wheel-bold-duotone',
+      variant: 'contained' as const,
+      color: 'primary' as const,
+      onClick: () => router.push(paths.dashboard.entry.new),
+    },
+    hasPermission([Authorities.CREATE_PAYMENTS]) && {
+      key: 'payment',
+      label: 'Registar pagamento',
+      short: 'Pagamento',
+      icon: 'solar:wallet-money-bold-duotone',
+      variant: 'contained' as const,
+      color: 'success' as const,
+      onClick: () => setPaymentOpen(true),
+    },
+    hasPermission([Authorities.CREATE_EXPENSES]) && {
+      key: 'expense',
+      label: 'Registar despesa',
+      short: 'Despesa',
+      icon: 'solar:bill-list-bold-duotone',
+      variant: 'outlined' as const,
+      color: 'primary' as const,
+      onClick: () => setExpenseOpen(true),
+    },
+  ].filter(Boolean) as {
+    key: string;
+    label: string;
+    short: string;
+    icon: string;
+    variant: 'contained' | 'outlined';
+    color: 'primary' | 'success';
+    onClick: VoidFunction;
+  }[];
+
+  // Em telemovel, as tres accoes cabem numa linha (icone sobre rotulo curto),
+  // libertando a primeira dobra para os indicadores.
   const quickActions = (
-    <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
-      {hasPermission([Authorities.CREATE_ENTRIES]) && (
+    <Box
+      sx={{
+        display: 'grid',
+        gap: 1.5,
+        gridTemplateColumns: {
+          xs: `repeat(${Math.max(quickActionList.length, 1)}, 1fr)`,
+          sm: 'repeat(auto-fill, minmax(220px, max-content))',
+        },
+      }}
+    >
+      {quickActionList.map((action) => (
         <Button
-          variant="contained"
+          key={action.key}
+          variant={action.variant}
+          color={action.color}
           size="large"
-          startIcon={<Iconify icon="solar:wheel-bold-duotone" />}
-          onClick={() => router.push(paths.dashboard.entry.new)}
+          aria-label={action.label}
+          onClick={action.onClick}
+          sx={{
+            minHeight: { xs: 64, sm: 48 },
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 0.5, sm: 1 },
+            px: { xs: 1, sm: 2.5 },
+            typography: { xs: 'caption', sm: 'button' },
+            fontWeight: 700,
+          }}
         >
-          Nova entrada
+          <Iconify icon={action.icon} width={22} />
+          <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>
+            {action.short}
+          </Box>
+          <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+            {action.label}
+          </Box>
         </Button>
-      )}
-      {hasPermission([Authorities.CREATE_PAYMENTS]) && (
-        <Button
-          variant="contained"
-          color="success"
-          size="large"
-          startIcon={<Iconify icon="solar:wallet-money-bold-duotone" />}
-          onClick={() => setPaymentOpen(true)}
-        >
-          Registar pagamento
-        </Button>
-      )}
-      {hasPermission([Authorities.CREATE_EXPENSES]) && (
-        <Button
-          variant="outlined"
-          size="large"
-          startIcon={<Iconify icon="solar:bill-list-bold-duotone" />}
-          onClick={() => setExpenseOpen(true)}
-        >
-          Registar despesa
-        </Button>
-      )}
-    </Stack>
+      ))}
+    </Box>
   );
 
   return (
@@ -178,13 +247,23 @@ export default function OverviewView() {
         <title>Resumo | {APP_NAME}</title>
       </Helmet>
 
-      <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-        <Stack spacing={3}>
+      <Container maxWidth={settings.themeStretch ? false : 'xl'} sx={{ px: { xs: 2 } }}>
+        <Stack spacing={{ xs: 2, sm: 3 }}>
           {quickActions}
 
           {canSeeSummary && (
             <>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gap: 1.5,
+                  alignItems: 'center',
+                  gridTemplateColumns: {
+                    xs: 'repeat(auto-fill, minmax(150px, 1fr))',
+                    sm: 'repeat(2, 200px) auto',
+                  },
+                }}
+              >
                 <TextField
                   size="small"
                   type="date"
@@ -203,7 +282,10 @@ export default function OverviewView() {
                 />
                 {(startDate !== todayMaputo() || endDate !== todayMaputo()) && (
                   <Button
+                    variant="soft"
                     color="inherit"
+                    startIcon={<Iconify icon="solar:calendar-date-bold-duotone" />}
+                    sx={{ minHeight: 44, justifySelf: 'start' }}
                     onClick={() => {
                       setStartDate(todayMaputo());
                       setEndDate(todayMaputo());
@@ -212,67 +294,84 @@ export default function OverviewView() {
                     Hoje
                   </Button>
                 )}
-              </Stack>
+              </Box>
 
               {summary && (
                 <>
-                  <Grid container spacing={3}>
-                    <Grid xs={12} sm={6} md={3}>
-                      <Indicator
-                        label="Viaturas atendidas"
-                        value={String(summary.entriesCount)}
-                        caption={`${summary.vehiclesCount} viaturas distintas`}
-                        icon="solar:wheel-bold-duotone"
-                      />
-                    </Grid>
-                    <Grid xs={12} sm={6} md={3}>
-                      <Indicator
-                        label="Serviços registados"
-                        value={formatMzn(summary.servicesTotal)}
-                        caption="Pela data do serviço"
-                        icon="solar:clipboard-list-bold-duotone"
-                      />
-                    </Grid>
-                    <Grid xs={12} sm={6} md={3}>
-                      <Indicator
-                        label="Recebimentos do período"
-                        value={formatMzn(summary.receipts)}
-                        caption="Pela data de recebimento, líquidos de estornos"
-                        icon="solar:wallet-money-bold-duotone"
-                      />
-                    </Grid>
-                    <Grid xs={12} sm={6} md={3}>
-                      <Indicator
-                        label="Despesas pagas"
-                        value={formatMzn(summary.expenses)}
-                        icon="solar:bill-list-bold-duotone"
-                      />
-                    </Grid>
-                    <Grid xs={12} sm={6} md={4}>
-                      <Indicator
-                        label="Movimento líquido"
-                        value={formatMzn(summary.netMovement)}
-                        caption="Recebimentos − despesas. Não é lucro nem saldo de caixa."
-                        icon="solar:transfer-vertical-bold-duotone"
-                      />
-                    </Grid>
-                    <Grid xs={12} sm={6} md={4}>
-                      <Indicator
-                        label="Por receber do período"
-                        value={formatMzn(summary.receivablePeriod)}
-                        caption="Saldo actual das entradas do período"
-                        icon="solar:hourglass-bold-duotone"
-                      />
-                    </Grid>
-                    <Grid xs={12} sm={6} md={4}>
-                      <Indicator
-                        label="Dívida total actual"
-                        value={formatMzn(summary.totalDebt)}
-                        caption="Todos os saldos pendentes"
-                        icon="solar:danger-triangle-bold-duotone"
-                      />
-                    </Grid>
-                  </Grid>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gap: { xs: 1.5, sm: 3 },
+                      // 1 coluna a 320 px; 2 a partir de ~360 px; 4 em desktop.
+                      gridTemplateColumns: {
+                        xs: 'repeat(auto-fill, minmax(150px, 1fr))',
+                        md: 'repeat(4, 1fr)',
+                      },
+                    }}
+                  >
+                    <Indicator
+                      label="Viaturas atendidas"
+                      value={String(summary.entriesCount)}
+                      caption={`${summary.vehiclesCount} viaturas distintas`}
+                      icon="solar:wheel-bold-duotone"
+                    />
+                    <Indicator
+                      label="Recebimentos"
+                      value={formatMzn(summary.receipts)}
+                      caption="Pela data de recebimento, líquidos de estornos"
+                      icon="solar:wallet-money-bold-duotone"
+                    />
+                    <Indicator
+                      label="Por receber do período"
+                      value={formatMzn(summary.receivablePeriod)}
+                      caption="Saldo actual das entradas do período"
+                      icon="solar:hourglass-bold-duotone"
+                    />
+                    <Indicator
+                      label="Dívida total actual"
+                      value={formatMzn(summary.totalDebt)}
+                      caption="Todos os saldos pendentes"
+                      icon="solar:danger-triangle-bold-duotone"
+                    />
+                    {(showMore || smUp) && (
+                      <>
+                        <Indicator
+                          label="Serviços registados"
+                          value={formatMzn(summary.servicesTotal)}
+                          caption="Pela data do serviço"
+                          icon="solar:clipboard-list-bold-duotone"
+                        />
+                        <Indicator
+                          label="Despesas pagas"
+                          value={formatMzn(summary.expenses)}
+                          icon="solar:bill-list-bold-duotone"
+                        />
+                        <Indicator
+                          label="Movimento líquido"
+                          value={formatMzn(summary.netMovement)}
+                          caption="Recebimentos − despesas. Não é lucro nem saldo de caixa."
+                          icon="solar:transfer-vertical-bold-duotone"
+                        />
+                      </>
+                    )}
+                  </Box>
+                  {!smUp && (
+                    <Button
+                      color="inherit"
+                      onClick={() => setShowMore((value) => !value)}
+                      endIcon={
+                        <Iconify
+                          icon={
+                            showMore ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'
+                          }
+                        />
+                      }
+                      aria-expanded={showMore}
+                      sx={{ alignSelf: 'center', minHeight: 44 }}
+                    >
+                      {showMore ? 'Menos indicadores' : 'Mais indicadores'}
+                    </Button>
+                  )}
 
                   <Grid container spacing={3}>
                     <Grid xs={12} md={4}>

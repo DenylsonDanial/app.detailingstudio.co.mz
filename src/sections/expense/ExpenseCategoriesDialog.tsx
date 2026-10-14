@@ -1,7 +1,6 @@
 import { useState } from 'react';
 // @mui
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -18,6 +17,7 @@ import {
   useGetExpenseCategoriesQuery,
   useSaveExpenseCategoryMutation,
 } from 'src/redux/services/expenseService';
+import ResponsiveDialog from '../shared/ResponsiveDialog';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ export default function ExpenseCategoriesDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
+    <ResponsiveDialog open={open} onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle>Categorias de despesa</DialogTitle>
       <DialogContent>
         <Stack spacing={1} sx={{ pt: 1 }}>
@@ -92,6 +92,6 @@ export default function ExpenseCategoriesDialog({
           Fechar
         </Button>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

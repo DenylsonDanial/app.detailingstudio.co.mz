@@ -45,6 +45,7 @@ import { useSetVehicleStatusMutation } from 'src/redux/services/vehicleService';
 // types
 import { CLIENT_TYPE_LABELS, IVehicle } from 'src/types/detailing';
 //
+import HeaderPrimaryAction from '../shared/HeaderPrimaryAction';
 import EntriesTable from '../entry/EntriesTable';
 import PaymentFormDialog from '../payment/PaymentFormDialog';
 import PaymentsTable from '../payment/PaymentsTable';
@@ -101,15 +102,14 @@ export default function ClientDetailView() {
 
   usePageHeader({
     title: client?.name ?? 'Cliente',
-    actions: (
-      <Button
+    primaryAction: (
+      <HeaderPrimaryAction
+        label="Clientes"
+        icon="eva:arrow-back-fill"
         variant="soft"
         color="secondary"
-        startIcon={<Iconify icon="eva:arrow-back-fill" />}
         onClick={() => router.push(paths.dashboard.client.list)}
-      >
-        Clientes
-      </Button>
+      />
     ),
   });
 

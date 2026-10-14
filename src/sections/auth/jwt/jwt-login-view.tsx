@@ -76,11 +76,7 @@ export default function JwtLoginView() {
       </Stack>
 
       <Stack spacing={2.5}>
-        <RHFTextField
-          name="username"
-          label="Utilizador ou email"
-          autoComplete="username"
-        />
+        <RHFTextField name="username" label="Utilizador ou email" autoComplete="username" />
         <RHFTextField
           name="password"
           label="Palavra-passe"
