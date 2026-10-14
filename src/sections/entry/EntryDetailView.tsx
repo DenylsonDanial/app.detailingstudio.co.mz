@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 // @mui
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -52,6 +53,7 @@ import {
 import HeaderPrimaryAction from '../shared/HeaderPrimaryAction';
 import PaymentFormDialog from '../payment/PaymentFormDialog';
 import HistoryList from '../shared/HistoryList';
+import MobileList from '../shared/MobileList';
 import ReasonDialog from '../shared/ReasonDialog';
 import { PaymentStatusLabel, WorkStatusLabel } from '../shared/StatusLabels';
 
@@ -204,12 +206,12 @@ export default function EntryDetailView() {
                     <Typography variant="body2">Pago: {formatMzn(entry.paid)}</Typography>
                     <Typography
                       variant="h5"
-                      sx={{ color: entry.balance > 0 ? 'error.main' : 'success.main' }}
+                      sx={{ color: entry.balance > 0 ? 'error.dark' : 'success.darker' }}
                     >
                       Saldo: {formatMzn(entry.balance)}
                     </Typography>
                     {!entry.clientCreditAllowed && entry.balance > 0 && (
-                      <Typography variant="caption" sx={{ color: 'warning.main' }}>
+                      <Typography variant="caption" sx={{ color: 'warning.darker' }}>
                         Cliente sem conta corrente: a entrega com saldo exige autorização do gestor.
                       </Typography>
                     )}
@@ -288,7 +290,26 @@ export default function EntryDetailView() {
 
           <Card>
             <CardHeader title="Serviços" />
-            <Scrollbar>
+            <MobileList
+              items={entry.lines.map((line) => ({
+                key: line.id,
+                primary: line.serviceName,
+                secondary: (
+                  <>
+                    {line.quantity} × {formatMzn(line.unitPrice)} ·{' '}
+                    {PRICING_TYPE_LABELS[line.pricingType]}
+                    {line.adjustReason && (
+                      <Box component="span" sx={{ display: 'block', color: 'warning.darker' }}>
+                        Ajuste (catálogo {formatMzn(line.catalogPrice)}): {line.adjustReason}
+                      </Box>
+                    )}
+                  </>
+                ),
+                value: formatMzn(line.subtotal),
+              }))}
+              footer={{ label: 'Total', value: formatMzn(entry.total) }}
+            />
+            <Scrollbar sx={{ display: { xs: 'none', sm: 'block' } }}>
               <Table size="small" sx={{ minWidth: 640, mt: 1 }}>
                 <TableHead>
                   <TableRow>
@@ -305,7 +326,7 @@ export default function EntryDetailView() {
                       <TableCell>
                         <Typography variant="body2">{line.serviceName}</Typography>
                         {line.adjustReason && (
-                          <Typography variant="caption" sx={{ color: 'warning.main' }}>
+                          <Typography variant="caption" sx={{ color: 'warning.darker' }}>
                             Ajuste (catálogo {formatMzn(line.catalogPrice)}): {line.adjustReason}
                           </Typography>
                         )}
@@ -331,7 +352,21 @@ export default function EntryDetailView() {
 
           <Card>
             <CardHeader title="Pagamentos afectados" />
-            <Scrollbar>
+            <MobileList
+              emptyText="Sem pagamentos."
+              items={entry.allocations.map((allocation, index) => ({
+                key: `${allocation.paymentId}-${index}`,
+                primary: `${allocation.paymentNumber}${
+                  allocation.kind === 'REVERSAL' ? ' (estorno)' : ''
+                }`,
+                secondary: `${formatDate(allocation.paymentDate)} · ${
+                  PAYMENT_METHOD_LABELS[allocation.method]
+                }`,
+                value: formatMzn(allocation.amount),
+                valueColor: allocation.amount < 0 ? 'error.dark' : undefined,
+              }))}
+            />
+            <Scrollbar sx={{ display: { xs: 'none', sm: 'block' } }}>
               <Table size="small" sx={{ minWidth: 560, mt: 1 }}>
                 <TableHead>
                   <TableRow>
@@ -361,7 +396,7 @@ export default function EntryDetailView() {
                       <TableCell>{PAYMENT_METHOD_LABELS[allocation.method]}</TableCell>
                       <TableCell
                         align="right"
-                        sx={{ color: allocation.amount < 0 ? 'error.main' : 'text.primary' }}
+                        sx={{ color: allocation.amount < 0 ? 'error.dark' : 'text.primary' }}
                       >
                         {formatMzn(allocation.amount)}
                       </TableCell>

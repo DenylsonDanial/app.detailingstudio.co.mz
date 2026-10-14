@@ -119,7 +119,7 @@ export default function RoleTableRow({ row, selected, onSelectRow, onDeleteRow }
             handleOpenConfirm();
             handleClosePopover();
           }}
-          sx={{ color: 'error.main' }}
+          sx={{ color: 'error.dark' }}
         >
           <Iconify icon="eva:trash-2-outline" />
           Remover

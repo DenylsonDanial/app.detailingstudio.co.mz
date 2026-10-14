@@ -61,7 +61,7 @@ export const StyledLabel = styled(Box)(
         }),
         // SOFT
         ...(softVariant && {
-          color: theme.palette[ownerState.color][isLight ? 'dark' : 'light'],
+          color: theme.palette[ownerState.color][isLight ? 'darker' : 'light'],
           backgroundColor: alpha(theme.palette[ownerState.color].main, 0.16),
         }),
       }),

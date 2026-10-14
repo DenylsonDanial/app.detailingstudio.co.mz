@@ -1,5 +1,6 @@
 import { useState } from 'react';
 // @mui
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
@@ -20,6 +21,7 @@ import { firstDayOfMonthMaputo, formatDate, formatMzn, todayMaputo } from 'src/u
 import { useGetStatementQuery } from 'src/redux/services/reportService';
 //
 import ExportButton from '../shared/ExportButton';
+import MobileList from '../shared/MobileList';
 
 // ----------------------------------------------------------------------
 
@@ -81,11 +83,33 @@ export default function StatementPanel({ clientId }: { clientId: number }) {
               <Typography variant="body2">
                 Saldo final do período: {formatMzn(statement.closingBalance)}
               </Typography>
-              <Typography variant="subtitle2" sx={{ color: 'error.main' }}>
+              <Typography variant="subtitle2" sx={{ color: 'error.dark' }}>
                 Dívida actual (hoje): {formatMzn(statement.currentDebt)}
               </Typography>
             </Stack>
-            <Scrollbar>
+            <Box sx={{ mx: -2, opacity: isFetching ? 0.6 : 1 }}>
+              <MobileList
+                items={[
+                  {
+                    key: 'opening',
+                    primary: 'Saldo inicial',
+                    secondary: formatDate(statement.startDate),
+                    value: formatMzn(statement.openingBalance),
+                  },
+                  ...statement.lines.map((line, index) => ({
+                    key: `${line.reference}-${index}`,
+                    primary: line.description,
+                    secondary: `${formatDate(line.date)} · ${line.reference} · saldo ${formatMzn(
+                      line.balance
+                    )}`,
+                    value: line.debit ? `+${formatMzn(line.debit)}` : `−${formatMzn(line.credit)}`,
+                    valueColor: line.debit ? 'error.dark' : 'success.darker',
+                  })),
+                ]}
+                footer={{ label: 'Saldo final', value: formatMzn(statement.closingBalance) }}
+              />
+            </Box>
+            <Scrollbar sx={{ display: { xs: 'none', sm: 'block' } }}>
               <Table size="small" sx={{ minWidth: 720, opacity: isFetching ? 0.6 : 1 }}>
                 <TableHead>
                   <TableRow>

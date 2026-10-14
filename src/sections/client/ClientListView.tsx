@@ -114,7 +114,7 @@ function ClientMobileCard({ client, onOpen }: { client: IClient; onOpen: VoidFun
                 variant="subtitle2"
                 sx={{
                   whiteSpace: 'nowrap',
-                  color: (client.currentDebt ?? 0) > 0 ? 'error.main' : 'text.primary',
+                  color: (client.currentDebt ?? 0) > 0 ? 'error.dark' : 'text.primary',
                 }}
               >
                 {formatMzn(client.currentDebt)}
@@ -234,7 +234,7 @@ export default function ClientListView() {
                 align="right"
                 sx={{
                   whiteSpace: 'nowrap',
-                  color: (row.currentDebt ?? 0) > 0 ? 'error.main' : 'text.primary',
+                  color: (row.currentDebt ?? 0) > 0 ? 'error.dark' : 'text.primary',
                 }}
               >
                 {formatMzn(row.currentDebt)}

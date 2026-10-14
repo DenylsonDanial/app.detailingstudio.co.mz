@@ -96,7 +96,7 @@ export default function PaymentsTable({ filter, hideClient, persistKey }: Props)
                 label: 'Montante',
                 value: formatMzn(row.amount),
                 emphasis: true,
-                color: row.amount < 0 ? 'error.main' : undefined,
+                color: row.amount < 0 ? 'error.dark' : undefined,
               },
             ]}
             actions={
@@ -129,7 +129,7 @@ export default function PaymentsTable({ filter, hideClient, persistKey }: Props)
             </TableCell>
             <TableCell
               align="right"
-              sx={{ color: row.amount < 0 ? 'error.main' : 'text.primary', whiteSpace: 'nowrap' }}
+              sx={{ color: row.amount < 0 ? 'error.dark' : 'text.primary', whiteSpace: 'nowrap' }}
             >
               {formatMzn(row.amount)}
             </TableCell>

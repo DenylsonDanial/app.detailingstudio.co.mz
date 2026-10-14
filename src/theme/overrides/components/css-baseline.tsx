@@ -1,4 +1,4 @@
-import { Theme } from '@mui/material/styles';
+import { alpha, Theme } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 
@@ -23,10 +23,20 @@ export default function CssBaseline(theme: Theme) {
           width: '100%',
           height: '100%',
           backgroundColor: theme.palette.background.default,
-          backgroundImage: 
-            theme.palette.mode === 'light' 
-              ? 'url(/assets/backgrounds/financeiq-watermark.svg)' 
-              : 'url(/assets/backgrounds/financeiq-watermark-dark.svg)',
+          // Veu da cor de fundo por cima do padrao: atenua-o para o texto que
+          // assenta directamente no fundo manter contraste.
+          backgroundImage: `linear-gradient(${alpha(
+            theme.palette.background.default,
+            0.55
+          )}, ${alpha(theme.palette.background.default, 0.55)}), ${
+            theme.palette.mode === 'light'
+              ? 'url(/assets/backgrounds/financeiq-watermark.svg)'
+              : 'url(/assets/backgrounds/financeiq-watermark-dark.svg)'
+          }`,
+          // Em telemovel as paginas sao densas e o padrao so tira legibilidade.
+          [theme.breakpoints.down('sm')]: {
+            backgroundImage: 'none',
+          },
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

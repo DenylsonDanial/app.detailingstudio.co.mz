@@ -489,7 +489,7 @@ export default function EntryForm({ entry, initialClient }: Props) {
                       variant="caption"
                       role="alert"
                       data-field-error
-                      sx={{ color: 'error.main' }}
+                      sx={{ color: 'error.dark' }}
                     >
                       {error}
                     </Typography>

@@ -102,7 +102,7 @@ export default function PermissionTableRow({ row, selected, onSelectRow, onDelet
             handleOpenConfirm();
             handleClosePopover();
           }}
-          sx={{ color: 'error.main' }}
+          sx={{ color: 'error.dark' }}
         >
           <Iconify icon="eva:trash-2-outline" />
           Remover

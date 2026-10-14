@@ -114,7 +114,7 @@ function EntryMobileCard({ row, hideClient, onOpen }: MobileCardProps) {
                 variant="subtitle2"
                 sx={{
                   whiteSpace: 'nowrap',
-                  color: row.balance > 0 ? 'error.main' : 'text.primary',
+                  color: row.balance > 0 ? 'error.dark' : 'text.primary',
                 }}
               >
                 {formatMzn(row.balance)}
@@ -213,7 +213,7 @@ export default function EntriesTable({ filter, hideClient, persistKey }: Props) 
           </TableCell>
           <TableCell
             align="right"
-            sx={{ whiteSpace: 'nowrap', color: row.balance > 0 ? 'error.main' : 'text.primary' }}
+            sx={{ whiteSpace: 'nowrap', color: row.balance > 0 ? 'error.dark' : 'text.primary' }}
           >
             {formatMzn(row.balance)}
           </TableCell>

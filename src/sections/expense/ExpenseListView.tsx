@@ -253,7 +253,7 @@ export default function ExpenseListView() {
                     label: 'Valor',
                     value: formatMzn(row.amount),
                     emphasis: true,
-                    color: row.amount < 0 ? 'error.main' : undefined,
+                    color: row.amount < 0 ? 'error.dark' : undefined,
                   },
                 ]}
                 actions={
@@ -288,7 +288,7 @@ export default function ExpenseListView() {
                   align="right"
                   sx={{
                     whiteSpace: 'nowrap',
-                    color: row.amount < 0 ? 'error.main' : 'text.primary',
+                    color: row.amount < 0 ? 'error.dark' : 'text.primary',
                   }}
                 >
                   {formatMzn(row.amount)}

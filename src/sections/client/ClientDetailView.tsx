@@ -50,6 +50,7 @@ import EntriesTable from '../entry/EntriesTable';
 import PaymentFormDialog from '../payment/PaymentFormDialog';
 import PaymentsTable from '../payment/PaymentsTable';
 import HistoryList from '../shared/HistoryList';
+import MobileList from '../shared/MobileList';
 import ReasonDialog from '../shared/ReasonDialog';
 import ClientFormDialog from './ClientFormDialog';
 import OpeningBalanceDialog from './OpeningBalanceDialog';
@@ -254,7 +255,7 @@ export default function ClientDetailView() {
               <SummaryCard
                 label="Dívida actual"
                 value={formatMzn(client.currentDebt)}
-                color={(client.currentDebt ?? 0) > 0 ? 'error.main' : 'success.main'}
+                color={(client.currentDebt ?? 0) > 0 ? 'error.dark' : 'success.darker'}
               />
             </Grid>
           </Grid>
@@ -285,7 +286,62 @@ export default function ClientDetailView() {
                   </Button>
                 )}
               </Stack>
-              <Scrollbar>
+              <MobileList
+                emptyText="Sem viaturas registadas."
+                items={client.vehicles.map((vehicle) => ({
+                  key: vehicle.id,
+                  primary: vehicle.plate,
+                  secondary: [
+                    [vehicle.brand, vehicle.model].filter(Boolean).join(' '),
+                    vehicle.categoryLabel,
+                    vehicle.notes,
+                  ]
+                    .filter(Boolean)
+                    .join(' · '),
+                  value: (
+                    <Label
+                      variant="soft"
+                      color={vehicle.status === 'ACTIVE' ? 'success' : 'default'}
+                    >
+                      {vehicle.status === 'ACTIVE' ? 'Activa' : 'Arquivada'}
+                    </Label>
+                  ),
+                  actions: (
+                    <>
+                      {hasPermission([Authorities.UPDATE_VEHICLES]) && (
+                        <Button
+                          size="small"
+                          sx={{ minHeight: 44 }}
+                          onClick={() => setVehicleForm({ open: true, vehicle })}
+                        >
+                          Editar
+                        </Button>
+                      )}
+                      {hasPermission([Authorities.REASSIGN_VEHICLES]) &&
+                        vehicle.status === 'ACTIVE' && (
+                          <Button
+                            size="small"
+                            sx={{ minHeight: 44 }}
+                            onClick={() => setReassigning(vehicle)}
+                          >
+                            Reassociar
+                          </Button>
+                        )}
+                      {hasPermission([Authorities.DELETE_VEHICLES]) && (
+                        <Button
+                          size="small"
+                          color="inherit"
+                          sx={{ minHeight: 44 }}
+                          onClick={() => toggleVehicle(vehicle)}
+                        >
+                          {vehicle.status === 'ACTIVE' ? 'Arquivar' : 'Reactivar'}
+                        </Button>
+                      )}
+                    </>
+                  ),
+                }))}
+              />
+              <Scrollbar sx={{ display: { xs: 'none', sm: 'block' } }}>
                 <Table size="small" sx={{ minWidth: 640 }}>
                   <TableHead>
                     <TableRow>
